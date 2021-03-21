@@ -1,5 +1,7 @@
 # SimpleCommands - Unity
 
+`master` branch contains latest release, `development` contains the latest working un-released code.
+
 Developed on `Unity` `2020.2.4f1` for a project that required quick and simple commands and in-game console display for prototyping. This became an interesting topic and so will continue
 further development on this project.
 
