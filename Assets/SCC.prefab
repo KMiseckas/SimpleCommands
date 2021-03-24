@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 17cd174ffa5808c478984a93bf4ae37e, type: 3}
+  m_Actions: {fileID: -944628639613478452, guid: 17cd174ffa5808c478984a93bf4ae37e,
+    type: 3}
   m_NotificationBehavior: 2
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
@@ -87,15 +88,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6651362101593729340}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef05638e9ff923f4cbd6539959ac52c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 637b8e528682788468c8fe4f7d52b6b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ConsoleAnchorPosition: {x: 10, y: 10}
-  _ConsoleOutputBackground: {r: 0.2735849, g: 0.2735849, b: 0.2735849, a: 0.87058824}
-  _CommandFieldBackground: {r: 0.1981132, g: 0.1981132, b: 0.1981132, a: 0.89411765}
+  _ConsoleOutputBackground: {r: 0, g: 0, b: 0, a: 0.89411765}
+  _CommandFieldBackground: {r: 0, g: 0, b: 0, a: 0.84313726}
   _OutputTextColour: {r: 1, g: 1, b: 1, a: 1}
   _CommandTextColour: {r: 1, g: 1, b: 1, a: 1}
-  _OutputConsoleHeight: 240
+  _OutputConsoleHeight: 300
   _OutputHistoryCap: 200
   _CommandHistoryCap: 20
-  _Definitions: {fileID: 0}

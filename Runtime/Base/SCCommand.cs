@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SimpleCommands
 {
@@ -18,15 +19,21 @@ namespace SimpleCommands
 
         internal SCCommand(string key, string description, ParamInfo[] paramInfo, MethodInfo method)
         {
+            Assert.IsNotNull(key);
+            Assert.IsNotNull(paramInfo);
+            Assert.IsNotNull(method);
+
             CommandKey = key;
             CommandDesc = description;
             ParamInfo = paramInfo;
             Method = method;
         }
 
-        public bool Execute(string[] paramVals, out string output)
+        internal bool Execute(string[] paramVals, out string output)
         {
-            output = $"Executed `{CommandKey}` with params: `{string.Join(", ", paramVals)}`";
+            Assert.IsNotNull(paramVals);
+
+            output = "";
 
             object[] parsedParams = null;
 
@@ -44,7 +51,7 @@ namespace SimpleCommands
             }
             catch
             {
-                output = $"Execution for command `{CommandKey}` has failed";
+                output = $"Execution for command `{CommandKey}` has failed with unknown reason.";
                 return false;
             }
 
@@ -65,12 +72,12 @@ namespace SimpleCommands
                 {
                     try
                     {
-                        parsedParams[i] = ParamInfo[i].TypeParser.Invoke(paramVals[i]);
+                        parsedParams[i] = ParamInfo[i].ParserFunc.Invoke(paramVals[i]);
                     }
                     catch
                     {
                         parsedParams = null;
-                        failOutput = $"Could not parse `{paramVals[i]}` when executing command.";
+                        failOutput = $"Could not parse `{paramVals[i]}` as type `{ParamInfo[i].GetType().Name}` when executing command.";
                         return false;
                     }
 
@@ -80,7 +87,7 @@ namespace SimpleCommands
                 if(!ParamInfo[i].IsOptional)
                 {
                     parsedParams = null;
-                    failOutput = $"Parameter at position `{i}` of type `{ParamInfo[i].Type.Name}` must be specified.";
+                    failOutput = $"Parameter at position `{i}` for type `{ParamInfo[i].Type.Name}` must be specified.";
                     return false;
                 }
             }
@@ -89,16 +96,16 @@ namespace SimpleCommands
         }
     }
 
-    internal struct ParamInfo
+    public struct ParamInfo
     {
         internal readonly Type Type;
-        internal readonly Func<string, object> TypeParser;
+        internal readonly Func<string, object> ParserFunc;
         internal readonly bool IsOptional;
 
-        internal ParamInfo(Type type, Func<string, object> typeParser, bool isOptionalParam = false)
+        public ParamInfo(Type type, Func<string, object> parserFunc, bool isOptionalParam = false)
         {
             Type = type;
-            TypeParser = typeParser;
+            ParserFunc = parserFunc;
             IsOptional = isOptionalParam;
         }
     }
