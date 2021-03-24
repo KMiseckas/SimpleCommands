@@ -245,8 +245,6 @@ namespace SimpleCommands
             if(_CurrentlyDisplayedCommand == null)
                 return;
 
-            LinkedListNode<string> temp = _CurrentlyDisplayedCommand;
-
             string commandString = "";
 
             if(_CurrentlyDisplayedCommand.Previous != null)

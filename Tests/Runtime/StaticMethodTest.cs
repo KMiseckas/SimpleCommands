@@ -40,7 +40,7 @@ public class StaticMethodTest : MonoBehaviour
 
     }
 
-    [SCCommand("test1", CommandTargetType = CommandTargetType.Static)]
+    [SCCommand("test1")]
     public static void Test1()
     {
         Debug.LogWarning("TEST WORKS");
