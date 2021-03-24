@@ -29,7 +29,7 @@ namespace SimpleCommands
             Method = method;
         }
 
-        internal bool Execute(string[] paramVals, out string output)
+        internal bool TryExecute(string[] paramVals, out string output)
         {
             Assert.IsNotNull(paramVals);
 
@@ -39,7 +39,7 @@ namespace SimpleCommands
 
             if(ParamInfo.Length > 0)
             {
-                if(!ParseParams(paramVals, out parsedParams, out output))
+                if(!TryParseParams(paramVals, out parsedParams, out output))
                 {
                     return false;
                 }
@@ -58,7 +58,7 @@ namespace SimpleCommands
             return true;
         }
 
-        private bool ParseParams(string[] paramVals, out object[] parsedParams, out string failOutput)
+        private bool TryParseParams(string[] paramVals, out object[] parsedParams, out string failOutput)
         {
             failOutput = "";
 
@@ -77,7 +77,7 @@ namespace SimpleCommands
                     catch
                     {
                         parsedParams = null;
-                        failOutput = $"Could not parse `{paramVals[i]}` as type `{ParamInfo[i].GetType().Name}` when executing command.";
+                        failOutput = $"Could not parse `{paramVals[i]}` as type `{ParamInfo[i].Type.Name}` when executing command.";
                         return false;
                     }
 

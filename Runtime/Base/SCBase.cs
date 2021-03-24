@@ -216,7 +216,7 @@ namespace SimpleCommands
             }
             else
             {
-                if(command.Execute(data, out string output))
+                if(command.TryExecute(data, out string output))
                 {
                     AddConsoleOutput($"Executed command `{commandKey}`.");
                 }
