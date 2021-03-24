@@ -1,82 +1,105 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace SimpleCommands
 {
-    public class SCCommand : SCCommandBase
+    public class SCCommand
     {
-        private Action _Action;
+        internal readonly string CommandKey;
 
-        public SCCommand(string key, string description, string format, Action action) : base(key, description, format)
+        internal readonly string CommandDesc;
+
+        internal readonly ParamInfo[] ParamInfo;
+
+        internal readonly MethodInfo Method; 
+
+        internal SCCommand(string key, string description, ParamInfo[] paramInfo, MethodInfo method)
         {
-            _Action = action;
+            CommandKey = key;
+            CommandDesc = description;
+            ParamInfo = paramInfo;
+            Method = method;
         }
 
-        public void Execute()
+        public bool Execute(string[] paramVals, out string output)
         {
-            _Action();
+            output = $"Executed `{CommandKey}` with params: `{string.Join(", ", paramVals)}`";
+
+            object[] parsedParams = null;
+
+            if(ParamInfo.Length > 0)
+            {
+                if(!ParseParams(paramVals, out parsedParams, out output))
+                {
+                    return false;
+                }
+            }
+
+            try
+            {
+                Method.Invoke(null, parsedParams);
+            }
+            catch
+            {
+                output = $"Execution for command `{CommandKey}` has failed";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ParseParams(string[] paramVals, out object[] parsedParams, out string failOutput)
+        {
+            failOutput = "";
+
+            int paramValCount = paramVals.Length;
+
+            parsedParams = new object[ParamInfo.Length];
+
+            for(int i = 0; i < ParamInfo.Length; i++)
+            {
+                if(paramValCount > i)
+                {
+                    try
+                    {
+                        parsedParams[i] = ParamInfo[i].TypeParser.Invoke(paramVals[i]);
+                    }
+                    catch
+                    {
+                        parsedParams = null;
+                        failOutput = $"Could not parse `{paramVals[i]}` when executing command.";
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if(!ParamInfo[i].IsOptional)
+                {
+                    parsedParams = null;
+                    failOutput = $"Parameter at position `{i}` of type `{ParamInfo[i].Type.Name}` must be specified.";
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 
-    public class SCCommand<T1> : SCCommandBase
+    internal struct ParamInfo
     {
-        private Action<T1> _Action;
+        internal readonly Type Type;
+        internal readonly Func<string, object> TypeParser;
+        internal readonly bool IsOptional;
 
-        public SCCommand(string key, string description, string format, Action<T1> action) : base(key, description, format)
+        internal ParamInfo(Type type, Func<string, object> typeParser, bool isOptionalParam = false)
         {
-            _Action = action;
-        }
-
-        public void Execute(T1 value)
-        {
-            _Action(value);
-        }
-    }
-
-    public class SCCommand<T1, T2> : SCCommandBase
-    {
-        private Action<T1, T2> _Action;
-
-        public SCCommand(string key, string description, string format, Action<T1, T2> action) : base(key, description, format)
-        {
-            _Action = action;
-        }
-
-        public void Execute(T1 value, T2 value2)
-        {
-            _Action(value, value2);
-        }
-    }
-
-    public class SCCommand<T1, T2, T3> : SCCommandBase
-    {
-        private Action<T1, T2, T3> _Action;
-
-        public SCCommand(string key, string description, string format, Action<T1, T2, T3> action) : base(key, description, format)
-        {
-            _Action = action;
-        }
-
-        public void Execute(T1 value, T2 value2, T3 value3)
-        {
-            _Action(value, value2, value3);
-        }
-    }
-
-    public class SCCommand<T1, T2, T3, T4> : SCCommandBase
-    {
-        private Action<T1, T2, T3, T4> _Action;
-
-        public SCCommand(string key, string description, string format, Action<T1, T2, T3, T4> action) : base(key, description, format)
-        {
-            _Action = action;
-        }
-
-        public void Execute(T1 value, T2 value2, T3 value3, T4 value4)
-        {
-            _Action(value, value2, value3, value4);
+            Type = type;
+            TypeParser = typeParser;
+            IsOptional = isOptionalParam;
         }
     }
 }

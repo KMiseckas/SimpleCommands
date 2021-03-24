@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -104,7 +105,6 @@ namespace SimpleCommands
             _Instance = this;
 
             DontDestroyOnLoad(this);
-
             SetupConsoleTextures();
 
             _Input = GetComponent<PlayerInput>();
@@ -187,7 +187,7 @@ namespace SimpleCommands
             string[] splitCommand = _CommandInput.Split(' ');
 
             string commandKey = splitCommand[0];
-            string[] data = null;
+            string[] data = new string[0];
 
             if(splitCommand.Length > 1)
             {
@@ -199,16 +199,16 @@ namespace SimpleCommands
                 }
             }
 
-            if(!_Definitions.ExecuteCommand(commandKey.ToLower(), data, out string message))
+            if(!_Definitions.GetCommand(commandKey.ToLower(), out SCCommand command))
             {
-                string failedMessage = "Failed command: " + message;
-
-                Debug.LogWarning(failedMessage);
-                AddConsoleOutput(failedMessage);
+                Debug.LogWarning("Command not found.");
+                AddConsoleOutput("Command not found.");
             }
             else
             {
-                AddConsoleOutput(message);
+                command.Execute(data, out string output);
+
+                Debug.LogWarning("Command successful: " + output);
             }
 
             _CommandInput = "";
