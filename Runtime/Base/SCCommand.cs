@@ -13,23 +13,27 @@ namespace SimpleCommands
 
         internal readonly string CommandDesc;
 
+        internal readonly Type ClassType;
+
         internal readonly ParamInfo[] ParamInfo;
 
         internal readonly MethodInfo Method; 
 
-        internal SCCommand(string key, string description, ParamInfo[] paramInfo, MethodInfo method)
+        internal SCCommand(string key, string description, Type classType, ParamInfo[] paramInfo, MethodInfo method)
         {
             Assert.IsNotNull(key);
             Assert.IsNotNull(paramInfo);
+            Assert.IsNotNull(classType);
             Assert.IsNotNull(method);
 
             CommandKey = key;
             CommandDesc = description;
+            ClassType = classType;
             ParamInfo = paramInfo;
             Method = method;
         }
 
-        internal bool TryExecute(string[] paramVals, out string output)
+        internal bool TryExecute(string[] paramVals, out string output, TargetInfo targetInfo = default)
         {
             Assert.IsNotNull(paramVals);
 
@@ -45,14 +49,71 @@ namespace SimpleCommands
                 }
             }
 
+            object[] targetInstances = null;
+            bool instanceFound = false;
+
+            if(!Method.IsStatic)
+            {
+                instanceFound = TryFindInstanceByID(targetInfo.IDType, targetInfo.ID, out targetInstances);
+            }
+
             try
             {
-                Method.Invoke(null, parsedParams);
+                if(instanceFound)
+                {
+                    for(int i = 0; i < targetInstances.Length; i++)
+                    {
+                        Method.Invoke(targetInstances[i], parsedParams);
+                    }
+                }
+                else
+                {
+                    Method.Invoke(null, parsedParams);
+                }
             }
             catch
             {
                 output = $"Execution for command `{CommandKey}` has failed with unknown reason.";
                 return false;
+            }
+
+            return true;
+        }
+
+        private bool TryFindInstanceByID(TargetIDType idType, string id, out object[] targetObjects)
+        {
+            targetObjects = null;
+
+            switch(idType)
+            {
+                case TargetIDType.None:
+                    targetObjects = GameObject.FindObjectsOfType(ClassType);
+                    break;
+
+                case TargetIDType.Tag:
+                    targetObjects = GameObject.FindGameObjectsWithTag(id);
+                    targetObjects = targetObjects.Length > 0 ? targetObjects : null;
+                    break;
+
+                case TargetIDType.InstanceID:
+
+                    if(!int.TryParse(id, out int intID))
+                    {
+                        return false;
+                    }
+
+                    targetObjects = new object[1];
+                    GameObject[] gameObjects = GameObject.FindObjectsOfType<GameObject>();
+
+                    for(int i = 0; i < gameObjects.Length; i++)
+                    {
+                        if(gameObjects[i].GetInstanceID() == intID)
+                        {
+                            targetObjects[0] = gameObjects[i];
+                        }
+                    }
+
+                    break;
             }
 
             return true;
@@ -108,5 +169,18 @@ namespace SimpleCommands
             ParserFunc = parserFunc;
             IsOptional = isOptionalParam;
         }
+    }
+
+    public struct TargetInfo
+    {
+        internal TargetIDType IDType;
+        internal string ID;
+    }
+
+    public enum TargetIDType
+    {
+        None,
+        Tag,
+        InstanceID
     }
 }

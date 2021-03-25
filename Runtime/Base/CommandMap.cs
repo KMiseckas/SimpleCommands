@@ -29,11 +29,12 @@ namespace SimpleCommands
 
         private void CreateMap(IParsersMap parsersMap)
         {
-            MethodInfo[] commandMethods = FindMethods();
+            CommandMethodInfo[] commandMethodInfo = FindCommandMethodInfo();
 
-            for(int i = 0; i < commandMethods.Length; i++)
+            for(int i = 0; i < commandMethodInfo.Length; i++)
             {
-                MethodInfo commandMethod = commandMethods[i];
+                MethodInfo commandMethod = commandMethodInfo[i].Method;
+                Type methodClassType = commandMethodInfo[i].ClassType;
 
                 ParameterInfo[] methodParams = commandMethod.GetParameters();
 
@@ -61,17 +62,17 @@ namespace SimpleCommands
 
                 Assert.IsFalse(_CommandMap.TryGetValue(commandKey, out SCCommand command));
 
-                SCCommand newCommand = new SCCommand(commandKey, commandDesc, cmdParamInfo, commandMethod);
+                SCCommand newCommand = new SCCommand(commandKey, commandDesc, methodClassType,cmdParamInfo, commandMethod);
 
                 _CommandMap.Add(commandKey, newCommand);
             }
         }
 
-        private MethodInfo[] FindMethods()
+        private CommandMethodInfo[] FindCommandMethodInfo()
         {
             Assembly[] targetAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            List<MethodInfo> commandMethods = new List<MethodInfo>();
+            List<CommandMethodInfo> commandMethods = new List<CommandMethodInfo>();
 
             for(int i = 0; i < targetAssemblies.Length; i++)
             {
@@ -87,13 +88,25 @@ namespace SimpleCommands
 
                         if(attributes.Length > 0)
                         {
-                            commandMethods.Add(methods[k]);
+                            commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
                         }
                     }
                 }
             }
 
             return commandMethods.ToArray();
+        }
+
+        private struct CommandMethodInfo
+        {
+            internal readonly MethodInfo Method;
+            internal readonly Type ClassType;
+
+            internal CommandMethodInfo(MethodInfo method, Type classType)
+            {
+                Method = method;
+                ClassType = classType;
+            }
         }
     }
 }
