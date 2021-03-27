@@ -82,6 +82,7 @@ namespace SimpleCommands
 
         private bool TryFindInstanceByID(TargetIDType idType, string id, out object[] targetObjects)
         {
+            //TODO add failure output strings.
             targetObjects = null;
 
             switch(idType)
@@ -91,7 +92,17 @@ namespace SimpleCommands
                     break;
 
                 case TargetIDType.Tag:
-                    GameObject[] gameObjectsByTag = GameObject.FindGameObjectsWithTag(id);
+                    GameObject[] gameObjectsByTag = null;
+
+                    try
+                    {
+                        gameObjectsByTag = GameObject.FindGameObjectsWithTag(id);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+
                     gameObjectsByTag = gameObjectsByTag.Length > 0 ? gameObjectsByTag : null;
 
                     if(gameObjectsByTag == null)
