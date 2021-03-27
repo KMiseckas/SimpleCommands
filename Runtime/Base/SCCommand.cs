@@ -26,7 +26,7 @@ namespace SimpleCommands
             Assert.IsNotNull(classType);
             Assert.IsNotNull(method);
 
-            CommandKey = key;
+            CommandKey = key.ToLower();
             CommandDesc = description;
             ClassType = classType;
             ParamInfo = paramInfo;
@@ -71,9 +71,9 @@ namespace SimpleCommands
                     Method.Invoke(null, parsedParams);
                 }
             }
-            catch
+            catch(Exception exception)
             {
-                output = $"Execution for command `{CommandKey}` has failed with unknown reason.";
+                output = $"Execution for command `{CommandKey}` has failed: {exception.Message}";
                 return false;
             }
 
@@ -91,8 +91,31 @@ namespace SimpleCommands
                     break;
 
                 case TargetIDType.Tag:
-                    targetObjects = GameObject.FindGameObjectsWithTag(id);
-                    targetObjects = targetObjects.Length > 0 ? targetObjects : null;
+                    GameObject[] gameObjectsByTag = GameObject.FindGameObjectsWithTag(id);
+                    gameObjectsByTag = gameObjectsByTag.Length > 0 ? gameObjectsByTag : null;
+
+                    if(gameObjectsByTag == null)
+                        return false;
+
+                    List<object> components = new List<object>();
+
+                    for(int i = 0; i < gameObjectsByTag.Length; i++)
+                    {
+                        GameObject gameObject = gameObjectsByTag[i];
+
+                        object component = gameObject.GetComponent(ClassType);
+
+                        if(component != null)
+                        {
+                            components.Add(component);
+                        }
+                    }
+
+                    if(components.Count > 0)
+                    {
+                        targetObjects = components.ToArray();
+                    }
+
                     break;
 
                 case TargetIDType.InstanceID:
@@ -103,13 +126,13 @@ namespace SimpleCommands
                     }
 
                     targetObjects = new object[1];
-                    GameObject[] gameObjects = GameObject.FindObjectsOfType<GameObject>();
+                    GameObject[] gameObjectsByID = GameObject.FindObjectsOfType<GameObject>();
 
-                    for(int i = 0; i < gameObjects.Length; i++)
+                    for(int i = 0; i < gameObjectsByID.Length; i++)
                     {
-                        if(gameObjects[i].GetInstanceID() == intID)
+                        if(gameObjectsByID[i].GetInstanceID() == intID)
                         {
-                            targetObjects[0] = gameObjects[i];
+                            targetObjects[0] = gameObjectsByID[i];
                         }
                     }
 

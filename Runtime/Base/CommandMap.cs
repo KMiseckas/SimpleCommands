@@ -12,7 +12,7 @@ namespace SimpleCommands
 
         private static bool _AreStaticsInitialized;
 
-        public CommandMap(IParsersMap parsersMap)
+        internal protected CommandMap(IParsersMap parsersMap)
         {
             if(!_AreStaticsInitialized)
             {

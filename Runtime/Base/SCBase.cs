@@ -73,6 +73,8 @@ namespace SimpleCommands
 
         private IParsersMap _ParsersMap;
 
+        private ICommandInputParser _CommandInputParser;
+
         private bool _NewOutputAdded;
 
         private static SCBase _Instance;
@@ -110,6 +112,7 @@ namespace SimpleCommands
 
             _ParsersMap = CreateParsersMap();
             _CommandMap = CreateCommandMap();
+            _CommandInputParser = CreateCommandInputParser();
 
             _Input = GetComponent<PlayerInput>();
 
@@ -122,6 +125,8 @@ namespace SimpleCommands
         protected abstract IParsersMap CreateParsersMap();
 
         protected abstract ICommandMap CreateCommandMap();
+
+        protected abstract ICommandInputParser CreateCommandInputParser();
 
         private void SetupConsoleTextures()
         {
@@ -184,7 +189,9 @@ namespace SimpleCommands
 
         private void IssueCommand(InputAction.CallbackContext obj)
         {
-            if(_CommandInput == null || _CommandInput == "")
+            CommandInputInfo commandInputInfo = null;
+
+            if(!_CommandInputParser.TryParseCommandInput(_CommandInput, out commandInputInfo))
                 return;
 
             _CommandHistory.AddFirst(_CommandInput);
@@ -195,30 +202,15 @@ namespace SimpleCommands
                 _CommandHistory.RemoveLast();
             }
 
-            string[] splitCommand = _CommandInput.Split(new char[]{' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-            string commandKey = splitCommand[0];
-            string[] data = new string[0];
-
-            if(splitCommand.Length > 1)
+            if(!_CommandMap.GetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
-                data = new string[splitCommand.Length - 1];
-
-                for(int i = 1; i < splitCommand.Length; i++)
-                {
-                    data[i - 1] = splitCommand[i];
-                }
-            }
-
-            if(!_CommandMap.GetCommand(commandKey.ToLower(), out SCCommand command))
-            {
-                AddConsoleOutput($"Command `{commandKey}` not found.");
+                AddConsoleOutput($"Command `{commandInputInfo.CommandKey}` not found.");
             }
             else
             {
-                if(command.TryExecute(data, out string output))
+                if(command.TryExecute(commandInputInfo.CommandParams, out string output, commandInputInfo.TargetInfo))
                 {
-                    AddConsoleOutput($"Executed command `{commandKey}`.");
+                    AddConsoleOutput($"Executed command `{commandInputInfo.CommandKey}`.");
                 }
                 else
                 {

@@ -15,5 +15,10 @@ namespace SimpleCommands
         {
             return new CommandMap(ParsersMap);
         }
+
+        protected override ICommandInputParser CreateCommandInputParser()
+        {
+            return new CommandInputParser();
+        }
     }
 }
