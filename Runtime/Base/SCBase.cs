@@ -8,66 +8,27 @@ using UnityEngine.Serialization;
 
 namespace SimpleCommands
 {
+    [RequireComponent(typeof(BaseCommandInputDisplay))]
+    [RequireComponent(typeof(BaseCommandOutputDisplay))]
     public abstract class SCBase : MonoBehaviour
     {
-        private const string OUTPUT_START = "> ";
         private const string ACTION_MAP_NAME = "Console";
-        private const float COMMAND_TEXT_SIZE = 20;
-        private const float COMMAND_VIEW_PADDING = 10;
-
-        [Header("Console Settings")]
-        [FormerlySerializedAs("console_screen_position")]
-        [SerializeField]
-        private Vector2 _ConsoleAnchorPosition = new Vector2(10, 10);
-
-        [FormerlySerializedAs("output_console_background")]
-        [SerializeField]
-        private Color _ConsoleOutputBackground;
-
-        [FormerlySerializedAs("command_field_background")]
-        [SerializeField]
-        private Color _CommandFieldBackground;
-
-        [FormerlySerializedAs("default_output_text_colour")]
-        [SerializeField]
-        private Color _OutputTextColour = Color.white;
-
-        [FormerlySerializedAs("default_command_text_colour")]
-        [SerializeField]
-        private Color _CommandTextColour = Color.white;
-
-        [FormerlySerializedAs("output_console_height")]
-        [SerializeField]
-        [Range(50, 400)]
-        private float _OutputConsoleHeight = 300;
-
-        [FormerlySerializedAs("history_size_output")]
-        [SerializeField]
-        [Min(10)]
-        private int _OutputHistoryCap = 200;
 
         [FormerlySerializedAs("history_size_commands")]
         [SerializeField]
         [Min(1)]
         private int _CommandHistoryCap = 20;
 
+        [FormerlySerializedAs("max_allowed_output_lines")]
+        [SerializeField]
+        [Min(1)]
+        private int _OutputLineCap = 500;
+
         private PlayerInput _Input;
-
-        private string _CommandInput;
-
-        private Vector2 _ScrollPosition;
-
-        private bool _IsConsoleVisible = false;
-
-        private LinkedList<string> _OutputConsoleLines = new LinkedList<string>();
 
         private LinkedList<string> _CommandHistory = new LinkedList<string>();
 
         private LinkedListNode<string> _CurrentlyDisplayedCommand;
-
-        private Texture2D _OutputConsoleTexture;
-
-        private Texture2D _CommandConsoleTexture;
 
         private ICommandMap _CommandMap;
 
@@ -75,11 +36,18 @@ namespace SimpleCommands
 
         private ICommandInputParser _CommandInputParser;
 
-        private bool _NewOutputAdded;
+        [SerializeField]
+        private BaseCommandOutputDisplay _OutputPanel;
+
+        [SerializeField]
+        private BaseCommandInputDisplay _InputPanel; 
 
         private static SCBase _Instance;
 
         private static object _Lock = new object();
+
+        public IParsersMap ParsersMap { get => _ParsersMap; set => _ParsersMap=value; }
+        public ICommandMap CommandMap { get => _CommandMap; set => _CommandMap=value; }
 
         public static SCBase Instance
         {
@@ -96,9 +64,6 @@ namespace SimpleCommands
                 }
             }
         }
-
-        public IParsersMap ParsersMap { get => _ParsersMap; set => _ParsersMap=value; }
-        public ICommandMap CommandMap { get => _CommandMap; set => _CommandMap=value; }
 
         private void Awake()
         {
@@ -117,34 +82,15 @@ namespace SimpleCommands
             _Input = GetComponent<PlayerInput>();
 
             DontDestroyOnLoad(this);
-            SetupConsoleTextures();
 
             HookInput();
         }
 
-        protected abstract IParsersMap CreateParsersMap();
+        internal protected abstract IParsersMap CreateParsersMap();
 
-        protected abstract ICommandMap CreateCommandMap();
+        internal protected abstract ICommandMap CreateCommandMap();
 
-        protected abstract ICommandInputParser CreateCommandInputParser();
-
-        private void SetupConsoleTextures()
-        {
-            _OutputConsoleTexture = new Texture2D(1, 1);
-            _CommandConsoleTexture = new Texture2D(1, 1);
-
-            for(int y = 0; y < _OutputConsoleTexture.height; ++y)
-            {
-                for(int x = 0; x < _OutputConsoleTexture.width; ++x)
-                {
-                    _OutputConsoleTexture.SetPixel(x, y, _ConsoleOutputBackground);
-                    _CommandConsoleTexture.SetPixel(x, y, _CommandFieldBackground);
-                }
-            }
-
-            _OutputConsoleTexture.Apply();
-            _CommandConsoleTexture.Apply();
-        }
+        internal protected abstract ICommandInputParser CreateCommandInputParser();
 
         /// <summary>
         /// Hook any input.
@@ -184,17 +130,20 @@ namespace SimpleCommands
 
         private void ToggleConsole(InputAction.CallbackContext obj)
         {
-            _IsConsoleVisible = !_IsConsoleVisible;
+            _InputPanel.ToggleVisible();
+            _OutputPanel.ToggleVisible();
         }
 
         private void IssueCommand(InputAction.CallbackContext obj)
         {
             CommandInputInfo commandInputInfo = null;
 
-            if(!_CommandInputParser.TryParseCommandInput(_CommandInput, out commandInputInfo))
+            string inputString = _InputPanel.GetInputString();
+
+            if(!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
                 return;
 
-            _CommandHistory.AddFirst(_CommandInput);
+            _CommandHistory.AddFirst(inputString);
             _CurrentlyDisplayedCommand = _CommandHistory.First;
 
             if(_CommandHistory.Count > _CommandHistoryCap)
@@ -218,7 +167,7 @@ namespace SimpleCommands
                 }
             }
 
-            _CommandInput = "";
+            _InputPanel.OverrideInputString(inputString);
         }
 
         private void PreviousCommand(InputAction.CallbackContext obj)
@@ -226,7 +175,7 @@ namespace SimpleCommands
             if(_CurrentlyDisplayedCommand == null)
                 return;
 
-            _CommandInput = _CurrentlyDisplayedCommand.Value;
+            _InputPanel.OverrideInputString(_CurrentlyDisplayedCommand.Value);
 
             LinkedListNode<string> temp = _CurrentlyDisplayedCommand;
             _CurrentlyDisplayedCommand = _CurrentlyDisplayedCommand.Next == null ? temp : _CurrentlyDisplayedCommand.Next;
@@ -245,87 +194,12 @@ namespace SimpleCommands
                 commandString = _CurrentlyDisplayedCommand.Value;
             }
 
-            _CommandInput = commandString;
+            _InputPanel.OverrideInputString(commandString);
         }
 
         public static void AddConsoleOutput(string output)
         {
-            Instance._OutputConsoleLines.AddLast(OUTPUT_START + output);
-
-            if(Instance._OutputConsoleLines.Count > Instance._OutputHistoryCap)
-            {
-                Instance._OutputConsoleLines.RemoveFirst();
-            }
-
-            Instance._NewOutputAdded = true;
-        }
-
-        private void OnGUI()
-        {
-            if(!_IsConsoleVisible)
-                return;
-
-            CreateConsoleOutput();
-            CreateCommandField();
-        }
-
-        private void CreateConsoleOutput()
-        {
-            float width = Screen.width - (_ConsoleAnchorPosition.x * 2);
-
-            Rect dimensions = new Rect(_ConsoleAnchorPosition.x, _ConsoleAnchorPosition.y, width, _OutputConsoleHeight);
-
-            GUIStyle boxStyle = new GUIStyle();
-            boxStyle.normal.background = _OutputConsoleTexture;
-
-            GUI.Box(dimensions, "", boxStyle);
-         
-            Rect scrollViewRect = new Rect(0, 0, 0, COMMAND_TEXT_SIZE * _OutputConsoleLines.Count);
-
-            _ScrollPosition = GUI.BeginScrollView(dimensions, _ScrollPosition, scrollViewRect);
-
-            GUI.contentColor = _OutputTextColour;
-
-            LinkedListNode<string> nextNode = _OutputConsoleLines.First;
-            int iteration = 0;
-
-            Rect labelRect = default;
-
-            while(nextNode != null)
-            {
-                labelRect = new Rect(5, (20 * iteration), width, COMMAND_TEXT_SIZE);
-
-                GUI.Label(labelRect, nextNode.Value);
-
-                iteration++;
-                nextNode = nextNode.Next;
-            }
-
-            if(labelRect != null && _NewOutputAdded)
-            {
-                GUI.ScrollTo(labelRect);
-            }
-
-            GUI.EndScrollView();
-
-            _NewOutputAdded = false;
-        }
-
-        private void CreateCommandField()
-        {
-            float y = _OutputConsoleHeight + COMMAND_VIEW_PADDING + _ConsoleAnchorPosition.y;
-            float width = Screen.width - (_ConsoleAnchorPosition.x * 2);
-
-            Rect dimensions = new Rect(_ConsoleAnchorPosition.x, y, width, COMMAND_TEXT_SIZE);
-
-            GUIStyle boxStyle = new GUIStyle();
-            boxStyle.normal.background = _CommandConsoleTexture;
-
-            GUI.Box(dimensions, "", boxStyle);
-
-            GUI.backgroundColor = Color.clear;
-            GUI.color = _CommandTextColour;
-            _CommandInput = GUI.TextField(dimensions, _CommandInput);
+            Instance._OutputPanel.Output(output);
         }
     }
 }

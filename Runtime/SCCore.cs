@@ -6,17 +6,17 @@ namespace SimpleCommands
 {
     public class SCCore : SCBase
     {
-        protected override IParsersMap CreateParsersMap()
+        internal protected override IParsersMap CreateParsersMap()
         {
             return new BaseParsersMap();
         }
 
-        protected override ICommandMap CreateCommandMap()
+        internal protected override ICommandMap CreateCommandMap()
         {
             return new CommandMap(ParsersMap);
         }
 
-        protected override ICommandInputParser CreateCommandInputParser()
+        internal protected override ICommandInputParser CreateCommandInputParser()
         {
             return new CommandInputParser();
         }

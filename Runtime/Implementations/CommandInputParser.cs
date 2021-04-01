@@ -86,7 +86,7 @@ namespace SimpleCommands
 
             TargetInfo result = new TargetInfo();
             result.IDType = idType;
-            result.ID = targetIDs[0]; //TODO make this so we can take multiple IDs for the same type, currently only use the first element in array if ID strings.
+            result.ID = targetIDs[0]; //TODO make this so we can take multiple IDs for the same type, currently we only use the first element in array of the ID strings.
 
             return result;
 
