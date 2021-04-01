@@ -19,11 +19,6 @@ namespace SimpleCommands
         [Min(1)]
         private int _CommandHistoryCap = 20;
 
-        [FormerlySerializedAs("max_allowed_output_lines")]
-        [SerializeField]
-        [Min(1)]
-        private int _OutputLineCap = 500;
-
         private PlayerInput _Input;
 
         private LinkedList<string> _CommandHistory = new LinkedList<string>();
@@ -134,6 +129,11 @@ namespace SimpleCommands
             _OutputPanel.ToggleVisible();
         }
 
+        public void IssueCommand()
+        {
+            IssueCommand(default);
+        }
+
         private void IssueCommand(InputAction.CallbackContext obj)
         {
             CommandInputInfo commandInputInfo = null;
@@ -167,7 +167,7 @@ namespace SimpleCommands
                 }
             }
 
-            _InputPanel.OverrideInputString(inputString);
+            _InputPanel.OverrideInputString("");
         }
 
         private void PreviousCommand(InputAction.CallbackContext obj)

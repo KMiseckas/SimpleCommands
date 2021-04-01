@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using SimpleCommands.Attributes;
+using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using System.IO;
 
 public class CommandOutputDisplay : BaseCommandOutputDisplay
 {
@@ -39,5 +41,26 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
 
         //Move to the bottom of the scroll view when new text is displayed.
         _ScrollRect.verticalNormalizedPosition = 0;
+    }
+
+    [SCCommand("scc_print", "Writes the console outputs into a .txt file.")]
+    public void PrintToTextFile()
+    {
+        string printTime = System.DateTime.Now.ToString("dd-MM-yy_HH-mm-ss");
+
+        string outputPath = Application.dataPath + "/SCCOutput" + printTime +".txt";
+
+        if(!File.Exists(outputPath))
+        {
+            try
+            {
+                File.WriteAllText(outputPath, _TextField.text);
+            }
+            catch(System.Exception exception)
+            {
+                Output("PRINT ERROR: " + exception.Message);
+                Debug.LogError(exception);
+            }
+        }
     }
 }
