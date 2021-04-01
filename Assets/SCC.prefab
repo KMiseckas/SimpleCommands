@@ -180,14 +180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 637b8e528682788468c8fe4f7d52b6b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ConsoleAnchorPosition: {x: 10, y: 10}
-  _ConsoleOutputBackground: {r: 0, g: 0, b: 0, a: 0.89411765}
-  _CommandFieldBackground: {r: 0, g: 0, b: 0, a: 0.84313726}
-  _OutputTextColour: {r: 1, g: 1, b: 1, a: 1}
-  _CommandTextColour: {r: 1, g: 1, b: 1, a: 1}
-  _OutputConsoleHeight: 142
-  _OutputHistoryCap: 200
   _CommandHistoryCap: 20
+  _OutputLineCap: 500
   _OutputPanel: {fileID: 3103405893897439056}
   _InputPanel: {fileID: 3878311690308570282}
 --- !u!114 &3103405893897439056
@@ -203,6 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _OutputUITop: {fileID: 8161719590496118298}
+  _ScrollRect: {fileID: 8161719590783591310}
+  _ScrollContent: {fileID: 8161719590679922312}
   _TextField: {fileID: 8161719590497513479}
 --- !u!114 &3878311690308570282
 MonoBehaviour:
@@ -371,6 +367,24 @@ RectTransform:
 --- !u!1 &8161719590496118298 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8671601721998182084, guid: 667ca55daa20d7c4f9af18276936855b,
+    type: 3}
+  m_PrefabInstance: {fileID: 654138413632463070}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8161719590783591310 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8671601721295799120, guid: 667ca55daa20d7c4f9af18276936855b,
+    type: 3}
+  m_PrefabInstance: {fileID: 654138413632463070}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &8161719590679922312 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8671601722182002262, guid: 667ca55daa20d7c4f9af18276936855b,
     type: 3}
   m_PrefabInstance: {fileID: 654138413632463070}
   m_PrefabAsset: {fileID: 0}
