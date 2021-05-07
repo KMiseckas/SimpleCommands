@@ -220,6 +220,7 @@ GameObject:
   - component: {fileID: 2748308086578994560}
   - component: {fileID: 2935691275363874660}
   - component: {fileID: 1099332251424744302}
+  - component: {fileID: 705205780814072644}
   m_Layer: 5
   m_Name: Console Input Field
   m_TagString: Untagged
@@ -349,6 +350,20 @@ MonoBehaviour:
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
+--- !u!114 &705205780814072644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3960735285722065217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55b7514dd540ca944b064e546f19d9ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _InputUITop: {fileID: 3960735285722065217}
+  _InputField: {fileID: 1099332251424744302}
 --- !u!1 &4539061445565085644
 GameObject:
   m_ObjectHideFlags: 0
@@ -1302,6 +1317,7 @@ GameObject:
   - component: {fileID: 8671601721998182087}
   - component: {fileID: 8671601721998182089}
   - component: {fileID: 8671601721998182086}
+  - component: {fileID: 2318374026848716225}
   m_Layer: 5
   m_Name: Console Output Panel
   m_TagString: Untagged
@@ -1368,6 +1384,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2318374026848716225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8671601721998182084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fef5e60058fcdb2468e5e4fdd1f7aa1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _OutputUITop: {fileID: 8671601721998182084}
+  _ScrollRect: {fileID: 8671601721295799120}
+  _TextField: {fileID: 8671601721999577305}
 --- !u!1 &8671601721999577303
 GameObject:
   m_ObjectHideFlags: 0
