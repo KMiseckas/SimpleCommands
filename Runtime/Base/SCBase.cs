@@ -148,6 +148,10 @@ namespace SimpleCommands
         /// <returns>New instance of <see cref="ICommandMap"/> implementation.</returns>
         protected abstract ICommandMap CreateCommandMap();
 
+        /// <summary>
+        /// Create a new implementation instance of <see cref="ICommandInputParser"/>.
+        /// </summary>
+        /// <returns>New instance of <see cref="ICommandInputParser"/> implementation.</returns>
         protected abstract ICommandInputParser CreateCommandInputParser();
 
         /// <summary>

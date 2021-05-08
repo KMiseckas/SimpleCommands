@@ -28,12 +28,29 @@ using UnityEngine.Assertions;
 
 namespace SimpleCommands
 {
+    /// <summary>
+    /// Default implementation of the <see cref="ICommandMap"/>. Contains a mapping between unique command key (ID) and an instance of <see cref="SCCommand"/>. Mappings are created using
+    /// any attributes that have been found across the project assemblies.<br/><br/>
+    /// 
+    /// It is recommended to use this default implementation of <see cref="ICommandMap"/> but not neccessery if the developer was to copy/write their own method of gathering all the 
+    /// <see cref="SCCommandAttribute"/>s and creating <see cref="SCCommand"/> instances from that information. In short, the system does allow for creating a custom command map if desired.
+    /// </summary>
     public class CommandMap : ICommandMap
     {
+        /// <summary>
+        /// Dictionary mapping the unique command key (ID) to the instance of <see cref="SCCommand"/>.
+        /// </summary>
         private readonly static Dictionary<string, SCCommand> _CommandMap = new Dictionary<string, SCCommand>();
 
+        /// <summary>
+        /// Are the statics of the class initialised.
+        /// </summary>
         private static bool _AreStaticsInitialized;
 
+        /// <summary>
+        /// Create an instance of <see cref="CommandMap"/>.
+        /// </summary>
+        /// <param name="parsersMap">Instance of <see cref="IParsersMap"/>.</param>
         internal protected CommandMap(IParsersMap parsersMap)
         {
             if(!_AreStaticsInitialized)
@@ -44,22 +61,29 @@ namespace SimpleCommands
             }
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public bool GetCommand(string commandKey, out SCCommand command)
         {
             return _CommandMap.TryGetValue(commandKey, out command);
         }
 
+        /// <summary>
+        /// Create the map of commands to their unique command key (ID). The command objects are created from any <see cref="SCCommandAttribute"/>s that have been located within the 
+        /// project assemblies.
+        /// </summary>
+        /// <param name="parsersMap">The instance of <see cref="IParsersMap" implementation./></param>
         private void CreateMap(IParsersMap parsersMap)
         {
             CommandMethodInfo[] commandMethodInfo = FindCommandMethodInfo();
 
+            //For every method information stored.
             for(int i = 0; i < commandMethodInfo.Length; i++)
             {
                 MethodInfo commandMethod = commandMethodInfo[i].Method;
                 Type methodClassType = commandMethodInfo[i].ClassType;
-
                 ParameterInfo[] methodParams = commandMethod.GetParameters();
-
                 SCCommandAttribute attribute = commandMethod.GetCustomAttribute<SCCommandAttribute>();
 
                 int methodParamCount = methodParams.Length;
@@ -75,12 +99,15 @@ namespace SimpleCommands
                         ParameterInfo paramInfo = methodParams[j];
                         Type paramType = paramInfo.ParameterType;
 
+                        //Check if a parser for the parameter type that this method would use exists in our `Parsers Map`.
+                        //If false, we cannot continue because trying to execute the command would crash due to not being able to convert a string object into a concrete type.
                         Assert.IsTrue(parsersMap.GetParser(paramType, out Func<string, object> parserFunc), $"No parser for type `{paramType}` exists.");
 
                         cmdParamInfo[j] = new ParamInfo(paramType, parserFunc, paramInfo.IsOptional);
                     }
                 }
 
+                //Fail early incase duplicate commands have been defined.
                 Assert.IsFalse(_CommandMap.TryGetValue(commandKey, out SCCommand command));
 
                 SCCommand newCommand = new SCCommand(commandKey, commandDesc, methodClassType,cmdParamInfo, commandMethod);
@@ -89,24 +116,33 @@ namespace SimpleCommands
             }
         }
 
+        /// <summary>
+        /// Use reflection to find all methods that contain the <see cref="SCCommandAttribute"/> usages and store the information into an array for these methods.
+        /// </summary>
+        /// <returns>Array of <see cref="CommandMethodInfo"/> objects.</returns>
         private CommandMethodInfo[] FindCommandMethodInfo()
         {
+            //Get all the assemblies to scan.
             Assembly[] targetAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             List<CommandMethodInfo> commandMethods = new List<CommandMethodInfo>();
 
+            //For every assembly, get every possible class type.
             for(int i = 0; i < targetAssemblies.Length; i++)
             {
                 Type[] types = targetAssemblies[i].GetTypes();
 
+                //For every class type found, get every method.
                 for(int j = 0; j < types.Length; j++)
                 {
                     MethodInfo[] methods = types[j].GetMethods();
 
+                    //For every method found, check if the method has a command attribute defined for it.
                     for(int k = 0; k < methods.Length; k++)
                     {
                         object[] attributes = methods[k].GetCustomAttributes(typeof(SCCommandAttribute), false);
 
+                        //If attribute exists, add it to the list of method info that contain an attribute.
                         if(attributes.Length > 0)
                         {
                             commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
@@ -118,11 +154,26 @@ namespace SimpleCommands
             return commandMethods.ToArray();
         }
 
+        /// <summary>
+        /// Simple data class to store the <see cref="MethodInfo"/> and the <see cref="Type"/> of class within which it is located.
+        /// </summary>
         private struct CommandMethodInfo
         {
+            /// <summary>
+            /// Method information of the method on which the attribute is defined on.
+            /// </summary>
             internal readonly MethodInfo Method;
+
+            /// <summary>
+            /// The type of class this method with the attribute is located.
+            /// </summary>
             internal readonly Type ClassType;
 
+            /// <summary>
+            /// Create a new instance of <see cref="CommandMethodInfo"/>.
+            /// </summary>
+            /// <param name="method">Method info.</param>
+            /// <param name="classType">Type of class method is located in.</param>
             internal CommandMethodInfo(MethodInfo method, Type classType)
             {
                 Method = method;

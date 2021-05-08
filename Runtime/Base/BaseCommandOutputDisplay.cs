@@ -24,12 +24,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseCommandInputDisplay : MonoBehaviour
+/// <summary>
+/// Base implementation for a command output display component. Extend this class to create a custom display for command console output.
+/// </summary>
+public abstract class BaseCommandOutputDisplay : MonoBehaviour
 {
+    /// <summary>
+    /// Is the display visible on screen.
+    /// </summary>
     private bool _IsVisible = false;
 
+    /// <summary>
+    /// Get whether the display is visible on the screen.
+    /// </summary>
     public bool IsVisible => _IsVisible;
 
+    /// <summary>
+    /// Toggle the display visibility.
+    /// </summary>
     public void ToggleVisible()
     {
         _IsVisible = !IsVisible;
@@ -37,9 +49,15 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
         OnVisibleToggle(IsVisible);
     }
 
+    /// <summary>
+    /// Invoke on visibilty toggle.
+    /// </summary>
+    /// <param name="isVisible">True if toggled to visible.</param>
     protected internal abstract void OnVisibleToggle(bool isVisible);
 
-    protected internal abstract string GetInputString();
-
-    protected internal abstract void OverrideInputString(string inputOverride);
+    /// <summary>
+    /// Output a string message to the display.
+    /// </summary>
+    /// <param name="outputMessage">String message.</param>
+    public abstract void Output(string outputMessage);
 }

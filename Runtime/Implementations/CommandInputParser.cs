@@ -28,10 +28,23 @@ using UnityEngine;
 
 namespace SimpleCommands
 {
+    /// <summary>
+    /// The default implementation of the <see cref="ICommandInputParser"/>. Parses the executed command input string into its parts and tries to figure out the
+    /// expected outcome.<br/><br/>
+    /// 
+    /// Also handles the stripping and parsing the string that determine what the <see cref="TargetIDType"/> of the command should be (only if target is applicable 
+    /// or defined within the string).
+    /// </summary>
     public class CommandInputParser : ICommandInputParser
     {
+        /// <summary>
+        /// Key value dictionary between a string ID and the <see cref="TargetIDType"/> it matches to.
+        /// </summary>
         private Dictionary<string, TargetIDType> _IDTypeStringMap = new Dictionary<string, TargetIDType>();
 
+        /// <summary>
+        /// Create a new instance of the <see cref="CommandInputParser"/>.
+        /// </summary>
         internal protected CommandInputParser()
         {
             _IDTypeStringMap.Add("tag", TargetIDType.Tag);
@@ -39,6 +52,9 @@ namespace SimpleCommands
             _IDTypeStringMap.Add("id", TargetIDType.InstanceID);
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public bool TryParseCommandInput(string commandInput, out CommandInputInfo commandInputInfo)
         {
             commandInputInfo = null;
@@ -69,6 +85,11 @@ namespace SimpleCommands
             return true;
         }
 
+        /// <summary>
+        /// Try to find and strip any string that defines the target that this command should be actioned on.
+        /// </summary>
+        /// <param name="commandInputString">The whole string of the command input.</param>
+        /// <param name="targetInfoString">The string which contains the data for the target info.</param>
         private void StripTargetInfo(ref string commandInputString, out string targetInfoString)
         {
             targetInfoString = "";
@@ -83,6 +104,11 @@ namespace SimpleCommands
             targetInfoString = match.Groups[1].Value;
         }
 
+        /// <summary>
+        /// Parse the string that contains the command target data.
+        /// </summary>
+        /// <param name="targetDataString"> The string which contains the target data.</param>
+        /// <returns>Instance of object that contains the target info.</returns>
         private TargetInfo ParseTargetStringData(string targetDataString)
         {
             if(targetDataString.Equals(""))

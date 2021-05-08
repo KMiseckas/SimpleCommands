@@ -37,16 +37,26 @@ namespace SimpleCommands
     /// </summary>
     public class SCCore : SCBase
     {
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         protected override ICommandMap CreateCommandMap()
         {
             return new CommandMap(CreateParserMap());
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         protected override ICommandInputParser CreateCommandInputParser()
         {
             return new CommandInputParser();
         }
 
+        /// <summary>
+        /// Create a new implementation instance of <see cref="IParsersMap"/>.
+        /// </summary>
+        /// <returns>New instances <see cref="IParsersMap"/> implementation.</returns>
         protected virtual IParsersMap CreateParserMap()
         {
             return new ParsersMap();

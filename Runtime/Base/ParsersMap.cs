@@ -26,12 +26,27 @@ using UnityEngine.Assertions;
 
 namespace SimpleCommands
 {
+    /// <summary>
+    /// Default implementation of the <see cref="IParsersMap"/> used specifically for the default implementation of the <see cref="ICommandMap"/> in <see cref="CommandMap"/> 
+    /// for <see cref="SCCore"/>.<br/><br/>
+    /// See <see cref="IParsersMap"/> for explanation.
+    /// </summary>
     public class ParsersMap : IParsersMap
     {
+        /// <summary>
+        /// Static dictionary that contains the types and their respectful parsers of type <see cref="Func{string, object}"/>. These parsers will convert a object in string format
+        /// to its object form (if applicable).
+        /// </summary>
         private readonly static Dictionary<Type, Func<string, object>> _TypeParsers = new Dictionary<Type, Func<string, object>>();
 
+        /// <summary>
+        /// Have statics been initialised already.
+        /// </summary>
         private static bool _AreStaticInitialized;
 
+        /// <summary>
+        /// Create a new instance of the <see cref="ParsersMap"/>.
+        /// </summary>
         public ParsersMap()
         {
             if(!_AreStaticInitialized)
@@ -42,6 +57,9 @@ namespace SimpleCommands
             }
         }
 
+        /// <summary>
+        /// Create the map of of parsers to their types to parse to. 
+        /// </summary>
         protected virtual void CreateMap()
         {
             AddParserFunc(typeof(int), (x) => { return int.Parse(x); });
@@ -55,6 +73,12 @@ namespace SimpleCommands
             AddParserFunc(typeof(char), (x) => { return char.Parse(x); });
         }
 
+        /// <summary>
+        /// Add a parser function for a given type.
+        /// </summary>
+        /// <param name="typeKey">Type the parser being added for is.</param>
+        /// <param name="parserFunc">The func that acts as a parser for given parser</param>
+        /// <param name="overrideExisting">Should the existing parser for the given type be overriden. False by default.</param>
         protected void AddParserFunc(Type typeKey, Func<string, object> parserFunc, bool overrideExisting = false)
         {
             if(_TypeParsers.ContainsKey(typeKey))
@@ -72,6 +96,9 @@ namespace SimpleCommands
             _TypeParsers.Add(typeKey, parserFunc);
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public bool GetParser(Type typeToParse, out Func<string, object> parserFunc)
         {
             return _TypeParsers.TryGetValue(typeToParse, out parserFunc);
