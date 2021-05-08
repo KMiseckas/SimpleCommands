@@ -76,4 +76,12 @@ public class CommandInputField : BaseCommandInputDisplay
     {
         _InputField.text = inputOverride;
     }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    protected internal override void Focus()
+    {
+        _InputField.ActivateInputField();
+    }
 }
