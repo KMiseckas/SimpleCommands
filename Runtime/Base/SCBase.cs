@@ -51,6 +51,13 @@ namespace SimpleCommands
         private int _CommandHistoryCap = 20;
 
         /// <summary>
+        /// Should the input field auto focus back onto the display so input can be entered again after a command is issued.
+        /// </summary>
+        [FormerlySerializedAs("auto_focus_post_command")]
+        [SerializeField]
+        private bool _AutoFocusPostCommand = true;
+
+        /// <summary>
         /// Instance of <see cref="PlayerInput"/> component for input.
         /// </summary>
         protected PlayerInput _Input;
@@ -197,6 +204,9 @@ namespace SimpleCommands
         {
             _InputPanel.ToggleVisible();
             _OutputPanel.ToggleVisible();
+
+            if(_InputPanel.IsVisible)
+                _InputPanel.Focus();
         }
 
         /// <summary>
@@ -244,6 +254,9 @@ namespace SimpleCommands
             }
 
             _InputPanel.OverrideInputString("");
+
+            if(_AutoFocusPostCommand)
+                _InputPanel.Focus();
         }
 
         /// <summary>

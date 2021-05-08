@@ -66,4 +66,9 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// </summary>
     /// <param name="inputOverride">String to force show in the input field.</param>
     protected internal abstract void OverrideInputString(string inputOverride);
+
+    /// <summary>
+    /// Focus the input field to allow input.
+    /// </summary>
+    protected internal abstract void Focus();
 }
