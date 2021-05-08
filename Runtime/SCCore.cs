@@ -20,27 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace SimpleCommands
 {
     public class SCCore : SCBase
     {
-        internal protected override IParsersMap CreateParsersMap()
-        {
-            return new BaseParsersMap();
-        }
-
         internal protected override ICommandMap CreateCommandMap()
         {
-            return new CommandMap(ParsersMap);
+            return new CommandMap(CreateParserMap());
         }
 
         internal protected override ICommandInputParser CreateCommandInputParser()
         {
             return new CommandInputParser();
+        }
+
+        internal protected virtual IParsersMap CreateParserMap()
+        {
+            return new ParsersMap();
         }
     }
 }
