@@ -24,12 +24,27 @@ using System;
 
 namespace SimpleCommands.Attributes
 {
+    /// <summary>
+    /// Attribute that defines any method as a command that is compatible with this `SimpleCommands` project.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
     public class SCCommandAttribute : Attribute
     {
+        /// <summary>
+        /// The unique key for the command to be issued.
+        /// </summary>
         public readonly string CommandKey;
+
+        /// <summary>
+        /// The description of the command intent.
+        /// </summary>
         public readonly string CommandDescription;
 
+        /// <summary>
+        /// Create a new instance of the <see cref="SCCommandAttribute"/>.
+        /// </summary>
+        /// <param name="commandKey">The unique key which will execute the command.</param>
+        /// <param name="commandDescription">The description of the command intent.</param>
         public SCCommandAttribute(string commandKey, string commandDescription = "")
         {
             CommandKey = commandKey.ToLower();

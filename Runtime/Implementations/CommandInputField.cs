@@ -27,18 +27,30 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
-/// 
+/// Base implementation for a default input display. Does not have to be used but contains majority 
+/// of required functionality for base use of the console system. Can be extended or completely
+/// ignored over a custom solution. The system practises flexibility to allow the user to implement 
+/// their own display as long as it is extending the class of <see cref="BaseCommandInputDisplay"/>
 /// </summary>
 public class CommandInputField : BaseCommandInputDisplay
 {
+    /// <summary>
+    /// The top level parent (hierarchy object). This object will be set visible or invisible to hide or unhide the console component.
+    /// </summary>
     [FormerlySerializedAs("input_field_top_view_object")]
     [SerializeField]
     private GameObject _InputUITop;
 
+    /// <summary>
+    /// The input field component where the text will be input into and rendered.
+    /// </summary>
     [FormerlySerializedAs("input_text_field_gameobject")]
     [SerializeField]
     private InputField _InputField;
 
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
     protected internal override void OnVisibleToggle(bool isVisible)
     {
         _InputUITop.gameObject.SetActive(isVisible);
@@ -49,11 +61,17 @@ public class CommandInputField : BaseCommandInputDisplay
         }
     }
 
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
     protected internal override string GetInputString()
     {
         return _InputField.text;
     }
 
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
     protected internal override void OverrideInputString(string inputOverride)
     {
         _InputField.text = inputOverride;
