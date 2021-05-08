@@ -26,13 +26,13 @@ using UnityEngine.Assertions;
 
 namespace SimpleCommands
 {
-    public class BaseParsersMap : IParsersMap
+    public class ParsersMap : IParsersMap
     {
         private readonly static Dictionary<Type, Func<string, object>> _TypeParsers = new Dictionary<Type, Func<string, object>>();
 
         private static bool _AreStaticInitialized;
 
-        public BaseParsersMap()
+        public ParsersMap()
         {
             if(!_AreStaticInitialized)
             {

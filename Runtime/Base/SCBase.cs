@@ -61,7 +61,6 @@ namespace SimpleCommands
 
         private static object _Lock = new object();
 
-        public IParsersMap ParsersMap { get => _ParsersMap; set => _ParsersMap=value; }
         public ICommandMap CommandMap { get => _CommandMap; set => _CommandMap=value; }
 
         public static SCBase Instance
@@ -90,7 +89,6 @@ namespace SimpleCommands
 
             _Instance = this;
 
-            _ParsersMap = CreateParsersMap();
             _CommandMap = CreateCommandMap();
             _CommandInputParser = CreateCommandInputParser();
 
@@ -100,8 +98,6 @@ namespace SimpleCommands
 
             HookInput();
         }
-
-        internal protected abstract IParsersMap CreateParsersMap();
 
         internal protected abstract ICommandMap CreateCommandMap();
 
