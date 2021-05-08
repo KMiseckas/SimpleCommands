@@ -69,8 +69,7 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     public void PrintToTextFile()
     {
         string printTime = System.DateTime.Now.ToString("dd-MM-yy_HH-mm-ss");
-
-        string outputPath = Application.dataPath + "/SCCOutput" + printTime +".txt";
+        string outputPath = Application.dataPath + "/SCOutput" + printTime +".txt";
 
         if(!File.Exists(outputPath))
         {

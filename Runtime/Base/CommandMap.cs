@@ -63,7 +63,6 @@ namespace SimpleCommands
                 SCCommandAttribute attribute = commandMethod.GetCustomAttribute<SCCommandAttribute>();
 
                 int methodParamCount = methodParams.Length;
-
                 string commandKey = attribute.CommandKey;
                 string commandDesc = attribute.CommandDescription;
 

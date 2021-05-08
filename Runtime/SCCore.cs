@@ -40,7 +40,7 @@ namespace SimpleCommands
 
         internal protected override ICommandInputParser CreateCommandInputParser()
         {
-            return new CommandInputParser(); // Replace Interface with an abstract class instead and create an implementation of it here.
+            return new CommandInputParser();
         }
     }
 }
