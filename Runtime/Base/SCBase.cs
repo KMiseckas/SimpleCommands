@@ -30,39 +30,82 @@ using UnityEngine.Serialization;
 
 namespace SimpleCommands
 {
+    /// <summary>
+    /// Base abstract class that handles the overall console / command system. Acts as a singleton and does not get destroyed on scene changes.
+    /// This only works with the new Unity Input system and requires a component of <see cref="PlayerInput"/>.
+    /// </summary>
+    [RequireComponent(typeof(PlayerInput))]
     public abstract class SCBase : MonoBehaviour
     {
+        /// <summary>
+        /// Name of the input action map used for this system. Hard coded.
+        /// </summary>
         private const string ACTION_MAP_NAME = "Console";
 
+        /// <summary>
+        /// The max number of commands to remember from the latest command.
+        /// </summary>
         [FormerlySerializedAs("history_size_commands")]
         [SerializeField]
         [Min(1)]
         private int _CommandHistoryCap = 20;
 
-        private PlayerInput _Input;
+        /// <summary>
+        /// Instance of <see cref="PlayerInput"/> component for input.
+        /// </summary>
+        protected PlayerInput _Input;
 
-        private LinkedList<string> _CommandHistory = new LinkedList<string>();
+        /// <summary>
+        /// List containing the history of the most recent commands, capped at amount based on <see cref="_CommandHistoryCap"/>.
+        /// </summary>
+        protected LinkedList<string> _CommandHistory = new LinkedList<string>();
 
-        private LinkedListNode<string> _CurrentlyDisplayedCommand;
+        /// <summary>
+        /// The currently displayed command from the command history, can be <see langword="null"/> if not displaying a command that is from the history list.
+        /// </summary>
+        protected LinkedListNode<string> _CurrentlyDisplayedCommand;
 
-        private ICommandMap _CommandMap;
+        /// <summary>
+        /// Instance of the <see cref="ICommandMap"/> implementation used for retrieving instances of <see cref="SCCommand"/>.
+        /// </summary>
+        protected ICommandMap _CommandMap;
 
-        private IParsersMap _ParsersMap;
+        /// <summary>
+        /// Instance of the <see cref="ICommandInputParser"/> implementation used for trying to parse the command string that is visible in the console input field in order
+        /// to try and execute.
+        /// </summary>
+        protected ICommandInputParser _CommandInputParser;
 
-        private ICommandInputParser _CommandInputParser;
-
+        /// <summary>
+        /// The panel display which will show the output text.
+        /// </summary>
         [SerializeField]
         private BaseCommandOutputDisplay _OutputPanel;
 
+        /// <summary>
+        /// The panel display which will display and allow the user to input text.
+        /// </summary>
         [SerializeField]
         private BaseCommandInputDisplay _InputPanel; 
 
+        /// <summary>
+        /// Reference to the instance of this class.
+        /// </summary>
         private static SCBase _Instance;
 
-        private static object _Lock = new object();
+        /// <summary>
+        /// Object to set <see langword="lock"/> on.
+        /// </summary>
+        private static readonly object _Lock = new object();
 
+        /// <summary>
+        /// Get/Set instance of <see cref="ICommandMap"/>.
+        /// </summary>
         public ICommandMap CommandMap { get => _CommandMap; set => _CommandMap=value; }
 
+        /// <summary>
+        /// Get or create an instance of this object depending on whether it already exists or not. Thread safe.
+        /// </summary>
         public static SCBase Instance
         {
             get
@@ -99,12 +142,16 @@ namespace SimpleCommands
             HookInput();
         }
 
-        internal protected abstract ICommandMap CreateCommandMap();
+        /// <summary>
+        /// Create and return a new instance of <see cref="ICommandMap"/> implementation from which commands <see cref="SCCommand"/>s will be retrieved.
+        /// </summary>
+        /// <returns>New instance of <see cref="ICommandMap"/> implementation.</returns>
+        protected abstract ICommandMap CreateCommandMap();
 
-        internal protected abstract ICommandInputParser CreateCommandInputParser();
+        protected abstract ICommandInputParser CreateCommandInputParser();
 
         /// <summary>
-        /// Hook any input.
+        /// Hook required input.
         /// </summary>
         private void HookInput()
         {
@@ -115,10 +162,10 @@ namespace SimpleCommands
         }
 
         /// <summary>
-        ///     Gets an action from the player console input
+        /// Gets an action from the player console input.
         /// </summary>
-        /// <param name="actionMapName"></param>
-        /// <param name="actionName"></param>
+        /// <param name="actionMapName">Name of the action map.</param>
+        /// <param name="actionName">Name of the action.</param>
         private InputAction GetAction(string actionMapName, string actionName)
         {
             InputActionMap actionMap = _Input.actions.FindActionMap(actionMapName, true);
@@ -127,11 +174,11 @@ namespace SimpleCommands
         }
 
         /// <summary>
-        ///     Binds an action to a player input action
+        /// Binds an action to a player input action.
         /// </summary>
-        /// <param name="actionMapName"></param>
-        /// <param name="actionName"></param>
-        /// <param name="callback"></param>
+        /// <param name="actionMapName">Name of the action map.</param>
+        /// <param name="actionName">Name of the action.</param>
+        /// <param name="callback">Action to invoke.</param>
         private void BindAction(Action<InputAction.CallbackContext> callback, string actionName, string actionMapName = ACTION_MAP_NAME)
         {
             InputAction action = GetAction(actionMapName, actionName);
@@ -139,17 +186,26 @@ namespace SimpleCommands
             action.performed += callback;
         }
 
+        /// <summary>
+        /// Toggle the console on/off.
+        /// </summary>
         private void ToggleConsole(InputAction.CallbackContext obj)
         {
             _InputPanel.ToggleVisible();
             _OutputPanel.ToggleVisible();
         }
 
+        /// <summary>
+        /// Issue a command with the current input field text as command input.
+        /// </summary>
         public void IssueCommand()
         {
             IssueCommand(default);
         }
 
+        /// <summary>
+        /// Issue a command with the current input field text as command input.
+        /// </summary>
         private void IssueCommand(InputAction.CallbackContext obj)
         {
             CommandInputInfo commandInputInfo = null;
@@ -169,23 +225,26 @@ namespace SimpleCommands
 
             if(!_CommandMap.GetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
-                AddConsoleOutput($"Command `{commandInputInfo.CommandKey}` not found.");
+                OutConsole($"Command `{commandInputInfo.CommandKey}` not found.");
             }
             else
             {
                 if(command.TryExecute(commandInputInfo.CommandParams, out string output, commandInputInfo.TargetInfo))
                 {
-                    AddConsoleOutput($"Executed command `{commandInputInfo.CommandKey}`.");
+                    OutConsole($"Executed command `{commandInputInfo.CommandKey}`.");
                 }
                 else
                 {
-                    AddConsoleOutput(output);
+                    OutConsole(output);
                 }
             }
 
             _InputPanel.OverrideInputString("");
         }
 
+        /// <summary>
+        /// Set the input display field to show the previous command from the command history list.
+        /// </summary>
         private void PreviousCommand(InputAction.CallbackContext obj)
         {
             if(_CurrentlyDisplayedCommand == null)
@@ -197,6 +256,9 @@ namespace SimpleCommands
             _CurrentlyDisplayedCommand = _CurrentlyDisplayedCommand.Next == null ? temp : _CurrentlyDisplayedCommand.Next;
         }
 
+        /// <summary>
+        /// Set the input display field to show the next command from the command history list.
+        /// </summary>
         private void NextCommand(InputAction.CallbackContext obj)
         {
             if(_CurrentlyDisplayedCommand == null)
@@ -213,7 +275,11 @@ namespace SimpleCommands
             _InputPanel.OverrideInputString(commandString);
         }
 
-        public static void AddConsoleOutput(string output)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="output"></param>
+        public static void OutConsole(string output)
         {
             Instance._OutputPanel.Output(output);
         }
