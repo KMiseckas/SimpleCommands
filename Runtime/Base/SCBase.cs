@@ -276,9 +276,9 @@ namespace SimpleCommands
         }
 
         /// <summary>
-        /// 
+        /// Output text to the console for rendering.
         /// </summary>
-        /// <param name="output"></param>
+        /// <param name="output">Output to display.</param>
         public static void OutConsole(string output)
         {
             Instance._OutputPanel.Output(output);
