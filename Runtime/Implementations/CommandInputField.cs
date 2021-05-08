@@ -20,13 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
-namespace SimpleCommands
+/// <summary>
+/// 
+/// </summary>
+public class CommandInputField : BaseCommandInputDisplay
 {
-    public interface IParsersMap
+    [FormerlySerializedAs("input_field_top_view_object")]
+    [SerializeField]
+    private GameObject _InputUITop;
+
+    [FormerlySerializedAs("input_text_field_gameobject")]
+    [SerializeField]
+    private InputField _InputField;
+
+    protected internal override void OnVisibleToggle(bool isVisible)
     {
-        bool GetParser(Type typeToParse, out Func<string, object> paramParser);
+        _InputUITop.gameObject.SetActive(isVisible);
+
+        if(!isVisible)
+        {
+            _InputField.text = "";
+        }
+    }
+
+    protected internal override string GetInputString()
+    {
+        return _InputField.text;
+    }
+
+    protected internal override void OverrideInputString(string inputOverride)
+    {
+        _InputField.text = inputOverride;
     }
 }

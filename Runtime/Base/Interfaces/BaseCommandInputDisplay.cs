@@ -20,13 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace SimpleCommands
+public abstract class BaseCommandInputDisplay : MonoBehaviour
 {
-    public interface IParsersMap
+    private bool _IsVisible = false;
+
+    public bool IsVisible => _IsVisible;
+
+    public void ToggleVisible()
     {
-        bool GetParser(Type typeToParse, out Func<string, object> paramParser);
+        _IsVisible = !IsVisible;
+
+        OnVisibleToggle(IsVisible);
     }
+
+    protected internal abstract void OnVisibleToggle(bool isVisible);
+
+    protected internal abstract string GetInputString();
+
+    protected internal abstract void OverrideInputString(string inputOverride);
 }

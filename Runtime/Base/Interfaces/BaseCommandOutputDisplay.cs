@@ -20,13 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace SimpleCommands
+/// <summary>
+/// Base implementation for a command output display component. Extend this class to create a custom display for command console output.
+/// </summary>
+public abstract class BaseCommandOutputDisplay : MonoBehaviour
 {
-    public interface IParsersMap
+    private bool _IsVisible = false;
+
+    public bool IsVisible => _IsVisible;
+
+    public void ToggleVisible()
     {
-        bool GetParser(Type typeToParse, out Func<string, object> paramParser);
+        _IsVisible = !IsVisible;
+
+        OnVisibleToggle(IsVisible);
     }
+
+    protected internal abstract void OnVisibleToggle(bool isVisible);
+
+    public abstract void Output(string outputMessage);
 }
