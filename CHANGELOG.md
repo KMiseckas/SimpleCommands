@@ -1,4 +1,3 @@
-- Addition: 
 - Addition: #24, #10, #7: Added ability to add modular input and output displays with a default implementation that comes with basic features.
 - Addition: #13: Added ability to select which monobehaviour instance to call the command on by using tags or instance ID's.
 - Addition: #13: Added ability to call commands on monobehaviour instances.
