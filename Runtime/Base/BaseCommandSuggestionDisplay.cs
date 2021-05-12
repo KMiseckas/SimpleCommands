@@ -47,14 +47,11 @@ public abstract class BaseCommandSuggestionDisplay : MonoBehaviour
         _SuggestedCommandList.AddRange(suggestedCommands);
     }
 
-    protected virtual void OnSelectedCommandSuggestion(SCCommand command)
+    protected virtual void TriggerSelectedCommandSuggestion(SCCommand command)
     {
         if (SelectedCommandSuggestion != null)
             SelectedCommandSuggestion(command);
-    }
 
-    protected void TriggerSelectedCommandSuggestion(SCCommand command)
-    {
-        OnSelectedCommandSuggestion(command);
+        SCBase.Instance.InputPanel.OverrideInputString(command.CommandKey);
     }
 }

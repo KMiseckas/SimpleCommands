@@ -100,7 +100,7 @@ namespace SimpleCommands
         /// The panel display which will display and allow the user to selected suggested commands.
         /// </summary>
         [SerializeField]
-        private BaseCommandSuggestionDisplay _SuggestionDisplay;
+        private BaseCommandSuggestionDisplay _SuggestionPanel;
 
         /// <summary>
         /// Implementation instance of the <see cref="ITextSuggester"/>.
@@ -137,7 +137,7 @@ namespace SimpleCommands
         /// </summary>
         public BaseCommandInputDisplay InputPanel => _InputPanel;
 
-        public BaseCommandSuggestionDisplay SuggestionDisplay => _SuggestionDisplay;
+        public BaseCommandSuggestionDisplay SuggestionDisplay => _SuggestionPanel;
 
         /// <summary>
         /// Get instance of <see cref="ITextSuggester"/>.
@@ -256,6 +256,7 @@ namespace SimpleCommands
         {
             _InputPanel.ToggleVisible();
             _OutputPanel.ToggleVisible();
+            _SuggestionPanel.ToggleVisible();
 
             if(_InputPanel.IsVisible)
                 _InputPanel.Focus();
@@ -381,7 +382,7 @@ namespace SimpleCommands
                 }
             }
 
-            _SuggestionDisplay.SetSuggestedCommands(_CurrentCommandSuggestions);
+            _SuggestionPanel.SetSuggestedCommands(_CurrentCommandSuggestions);
         }
 
         /// <summary>

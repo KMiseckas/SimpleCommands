@@ -66,13 +66,6 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
         }
     }
 
-    protected override void OnSelectedCommandSuggestion(SCCommand command)
-    {
-        base.OnSelectedCommandSuggestion(command);
-
-        SCBase.Instance.InputPanel.OverrideInputString(command.CommandKey);
-    }
-
     public override void SetSuggestedCommands(List<SCCommand> suggestedCommands)
     {
         base.SetSuggestedCommands(suggestedCommands);
