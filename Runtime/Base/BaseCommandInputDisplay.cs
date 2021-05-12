@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,6 +30,9 @@ using UnityEngine;
 /// </summary>
 public abstract class BaseCommandInputDisplay : MonoBehaviour
 {
+    public delegate void OnInputChangedDelegate(string val);
+    public static OnInputChangedDelegate InputChangedDelegate;
+
     /// <summary>
     /// Is the display visible on screen.
     /// </summary>
@@ -38,6 +42,11 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// Get whether the display is visible on the screen.
     /// </summary>
     public bool IsVisible => _IsVisible;
+
+    private void Awake()
+    {
+        BindOnInputChangedToAction(new Action<string>(OnTextChanged));
+    }
 
     /// <summary>
     /// Toggle the display visibility.
@@ -53,7 +62,7 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// Invoke on visibilty toggle.
     /// </summary>
     /// <param name="isVisible">True if toggled to visible.</param>
-    protected internal abstract void OnVisibleToggle(bool isVisible);
+    protected abstract void OnVisibleToggle(bool isVisible);
 
     /// <summary>
     /// Get the currently visible string in the input field text display.
@@ -71,4 +80,16 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// Focus the input field to allow input.
     /// </summary>
     protected internal abstract void Focus();
+
+    protected void OnTextChanged(string val)
+    {
+        if (InputChangedDelegate != null)
+            InputChangedDelegate(val);
+    }
+
+    /// <summary>
+    /// Bind the change of the input to the action that should be fired on that change.
+    /// </summary>
+    /// <param name="triggerOnTextChanged">The action to fire when the input field is changed.</param>
+    protected abstract void BindOnInputChangedToAction(Action<string> triggerOnTextChanged);
 }

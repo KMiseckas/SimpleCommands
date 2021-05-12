@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -49,15 +51,25 @@ public class CommandInputField : BaseCommandInputDisplay
     private InputField _InputField;
 
     /// <summary>
+    /// The suggestion text field component where the suggested text will be shown into and rendered.
+    /// </summary>
+    [FormerlySerializedAs("suggestion_text_field_gameobject")]
+    [SerializeField]
+    private Text _SuggestionText;
+
+    private int _CurrentSuggestion = 0;
+
+    /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    protected internal override void OnVisibleToggle(bool isVisible)
+    protected override void OnVisibleToggle(bool isVisible)
     {
         _InputUITop.gameObject.SetActive(isVisible);
 
         if(!isVisible)
         {
             _InputField.text = "";
+            _SuggestionText.text = "";
         }
     }
 
@@ -83,5 +95,13 @@ public class CommandInputField : BaseCommandInputDisplay
     protected internal override void Focus()
     {
         _InputField.ActivateInputField();
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    protected override void BindOnInputChangedToAction(Action<string> triggerOnInputChanged)
+    {
+        _InputField.onValueChanged.AddListener((val) => triggerOnInputChanged.Invoke(val));
     }
 }

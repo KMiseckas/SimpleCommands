@@ -161,6 +161,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 4f10f6f0-106d-4629-b656-e9f2c4d80e54
     m_ActionName: Console/Next[/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5743b01f-0fb9-488e-a27e-666e7512b2bc
+    m_ActionName: Console/AutoComplete[/Keyboard/tab]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Console
@@ -179,8 +183,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CommandHistoryCap: 20
+  _AutoFocusPostCommand: 1
   _OutputPanel: {fileID: 2972221337177646367}
   _InputPanel: {fileID: 61523723835517850}
+  _SuggestionDisplay: {fileID: 269755887802179155}
 --- !u!1001 &654138413632463070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -276,7 +282,7 @@ PrefabInstance:
     - target: {fileID: 8671601721417488174, guid: 667ca55daa20d7c4f9af18276936855b,
         type: 3}
       propertyPath: m_Size
-      value: 0
+      value: 0.9999595
       objectReference: {fileID: 0}
     - target: {fileID: 8671601721417488174, guid: 667ca55daa20d7c4f9af18276936855b,
         type: 3}
@@ -406,7 +412,7 @@ PrefabInstance:
     - target: {fileID: 8671601722182002262, guid: 667ca55daa20d7c4f9af18276936855b,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000086545944
+      value: 0.000010989619
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 667ca55daa20d7c4f9af18276936855b, type: 3}
@@ -438,5 +444,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55b7514dd540ca944b064e546f19d9ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &269755887802179155 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 769459020968033933, guid: 667ca55daa20d7c4f9af18276936855b,
+    type: 3}
+  m_PrefabInstance: {fileID: 654138413632463070}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ca6f6057c2a5f545a114ab4bc029d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

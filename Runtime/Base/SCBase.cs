@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using SimpleCommands.Base;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -93,7 +94,23 @@ namespace SimpleCommands
         /// The panel display which will display and allow the user to input text.
         /// </summary>
         [SerializeField]
-        private BaseCommandInputDisplay _InputPanel; 
+        private BaseCommandInputDisplay _InputPanel;
+
+        /// <summary>
+        /// The panel display which will display and allow the user to selected suggested commands.
+        /// </summary>
+        [SerializeField]
+        private BaseCommandSuggestionDisplay _SuggestionDisplay;
+
+        /// <summary>
+        /// Implementation instance of the <see cref="ITextSuggester"/>.
+        /// </summary>
+        private ITextSuggester _CommandSuggester;
+
+        /// <summary>
+        /// Current suggestions from the CommandSuggester.
+        /// </summary>
+        protected List<SCCommand> _CurrentCommandSuggestions;
 
         /// <summary>
         /// Reference to the instance of this class.
@@ -106,9 +123,26 @@ namespace SimpleCommands
         private static readonly object _Lock = new object();
 
         /// <summary>
-        /// Get/Set instance of <see cref="ICommandMap"/>.
+        /// Get instance of <see cref="ICommandMap"/>.
         /// </summary>
-        public ICommandMap CommandMap { get => _CommandMap; set => _CommandMap=value; }
+        public ICommandMap CommandMap => _CommandMap;
+
+        /// <summary>
+        /// Get instance of <see cref="BaseCommandOutputDisplay"/>.
+        /// </summary>
+        public BaseCommandOutputDisplay OutputPanel => _OutputPanel;
+
+        /// <summary>
+        /// Get instance of <see cref="BaseCommandInputDisplay"/>.
+        /// </summary>
+        public BaseCommandInputDisplay InputPanel => _InputPanel;
+
+        public BaseCommandSuggestionDisplay SuggestionDisplay => _SuggestionDisplay;
+
+        /// <summary>
+        /// Get instance of <see cref="ITextSuggester"/>.
+        /// </summary>
+        public ITextSuggester CommandSuggester => _CommandSuggester;
 
         /// <summary>
         /// Get or create an instance of this object depending on whether it already exists or not. Thread safe.
@@ -137,10 +171,16 @@ namespace SimpleCommands
                 return;
             }
 
+            _CurrentCommandSuggestions = new List<SCCommand>();
+
             _Instance = this;
 
             _CommandMap = CreateCommandMap();
             _CommandInputParser = CreateCommandInputParser();
+            _CommandSuggester = CreateCommandSuggester();
+
+            //Populate the suggester with the collection of all the command keys.
+            _CommandSuggester.AddCollection(_CommandMap.GetAllCommandKeys());
 
             _Input = GetComponent<PlayerInput>();
 
@@ -162,6 +202,15 @@ namespace SimpleCommands
         protected abstract ICommandInputParser CreateCommandInputParser();
 
         /// <summary>
+        /// Create a new implementation instance of <see cref="ITextSuggester"/>.
+        /// </summary>
+        /// <returns>New instance of <see cref="ITextSuggester"/> implementation.</returns>
+        protected virtual ITextSuggester CreateCommandSuggester()
+        {
+            return new CommandSuggester();
+        }
+
+        /// <summary>
         /// Hook required input.
         /// </summary>
         private void HookInput()
@@ -170,6 +219,9 @@ namespace SimpleCommands
             BindAction(IssueCommand, "Issue");
             BindAction(PreviousCommand, "Previous");
             BindAction(NextCommand, "Next");
+            BindAction(AutoCompleteOnTabInput, "AutoComplete");
+
+            BaseCommandInputDisplay.InputChangedDelegate += OnCommandInputTextChanged;
         }
 
         /// <summary>
@@ -237,7 +289,7 @@ namespace SimpleCommands
                 _CommandHistory.RemoveLast();
             }
 
-            if(!_CommandMap.GetCommand(commandInputInfo.CommandKey, out SCCommand command))
+            if(!_CommandMap.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
                 OutConsole($"Command `{commandInputInfo.CommandKey}` not found.");
             }
@@ -290,6 +342,46 @@ namespace SimpleCommands
             }
 
             _InputPanel.OverrideInputString(commandString);
+        }
+
+        /// <summary>
+        /// Override the input panel text with the first string in the suggestions.
+        /// </summary>
+        private void AutoCompleteOnTabInput(InputAction.CallbackContext obj)
+        {
+            if (_CurrentCommandSuggestions.Count == 0) return;
+
+            AutoCompleteInputField(_CurrentCommandSuggestions[0].CommandKey);
+        }
+
+        /// <summary>
+        /// Auto complete the input field with the passed in string argument.
+        /// </summary>
+        /// <param name="targetString">What to fill the text field with.</param>
+        protected virtual void AutoCompleteInputField(string targetString)
+        {
+            _InputPanel.OverrideInputString(targetString);
+        }
+
+        protected virtual void OnCommandInputTextChanged(string input)
+        {
+            string[] inputSplit = input.Split(new char[] {' '});
+
+            if (inputSplit.Length > 1) return;
+
+            string[] stringCommandSuggestions = _CommandSuggester.GetSuggestions(input);
+
+            _CurrentCommandSuggestions.Clear();
+
+            for (int i = 0; i < stringCommandSuggestions.Length; i++)
+            {
+                if(_CommandMap.TryGetCommand(stringCommandSuggestions[i], out SCCommand command))
+                {
+                    _CurrentCommandSuggestions.Add(command);
+                }
+            }
+
+            _SuggestionDisplay.SetSuggestedCommands(_CurrentCommandSuggestions);
         }
 
         /// <summary>
