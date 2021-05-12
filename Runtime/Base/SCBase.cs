@@ -221,7 +221,8 @@ namespace SimpleCommands
             BindAction(NextCommand, "Next");
             BindAction(AutoCompleteOnTabInput, "AutoComplete");
 
-            BaseCommandInputDisplay.InputChangedDelegate += OnCommandInputTextChanged;
+            BaseCommandInputDisplay.InputChangedEvent += OnCommandInputTextChanged;
+            BaseCommandSuggestionDisplay.SelectedCommandSuggestionEvent += OnSuggestedCommandSelected;
         }
 
         /// <summary>
@@ -364,6 +365,10 @@ namespace SimpleCommands
             _InputPanel.OverrideInputString(targetString);
         }
 
+        /// <summary>
+        /// Logic to run once the input text has changed.
+        /// </summary>
+        /// <param name="input">Text it has change to.</param>
         protected virtual void OnCommandInputTextChanged(string input)
         {
             string[] inputSplit = input.Split(new char[] {' '});
@@ -383,6 +388,15 @@ namespace SimpleCommands
             }
 
             _SuggestionPanel.SetSuggestedCommands(_CurrentCommandSuggestions);
+        }
+
+        /// <summary>
+        /// Logic to run once a suggestion has been selected from the suggestion panel.
+        /// </summary>
+        /// <param name="command">Command that has been selected.</param>
+        protected virtual void OnSuggestedCommandSelected(SCCommand command)
+        {
+            InputPanel.OverrideInputString(command.CommandKey);
         }
 
         /// <summary>

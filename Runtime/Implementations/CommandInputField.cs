@@ -57,7 +57,10 @@ public class CommandInputField : BaseCommandInputDisplay
     [SerializeField]
     private Text _SuggestionText;
 
-    private int _CurrentSuggestion = 0;
+    private void Awake()
+    {
+        _InputField.onValueChanged.AddListener(TriggerTextChanged);
+    }
 
     /// <summary>
     /// <inheritdoc/>
@@ -95,13 +98,5 @@ public class CommandInputField : BaseCommandInputDisplay
     protected internal override void Focus()
     {
         _InputField.ActivateInputField();
-    }
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    protected override void BindOnInputChangedToAction(Action<string> triggerOnInputChanged)
-    {
-        _InputField.onValueChanged.AddListener((val) => triggerOnInputChanged.Invoke(val));
     }
 }

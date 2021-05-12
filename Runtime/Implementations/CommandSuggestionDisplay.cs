@@ -6,6 +6,9 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+/// <summary>
+/// A default implementation of a suggestions display for the SimpleCommands project.
+/// </summary>
 public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
 {
     [FormerlySerializedAs("suggestion_console_top_view_ui")]
@@ -19,8 +22,14 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     [SerializeField]
     private RectTransform _SuggestionButtonTemplate;
 
+    /// <summary>
+    /// List of all the buttons that have been created for suggestions display.
+    /// </summary>
     private List<RectTransform> _SuggestionButtonList = new List<RectTransform>();
 
+    /// <summary>
+    /// Display the suggestions onto the UI for the user to pick out from.
+    /// </summary>
     protected virtual void DisplaySuggestions()
     {
         for (int i = 0; i < _SuggestionButtonList.Count; i++)
@@ -60,12 +69,16 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
             suggestionBtn.localScale = new Vector3(1, 1, 1);
             suggestionBtn.anchoredPosition = new Vector2(0, _SuggestionButtonList.Count * _SuggestionButtonTemplate.rect.height);
 
+            //Bind the on click event to the method that will fire of our selection event.
             suggestionBtn.GetComponent<Button>().onClick.AddListener(() => TriggerSelectedCommandSuggestion(command));
 
             _SuggestionButtonList.Add(suggestionBtn);
         }
     }
 
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
     public override void SetSuggestedCommands(List<SCCommand> suggestedCommands)
     {
         base.SetSuggestedCommands(suggestedCommands);
@@ -73,6 +86,9 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
         DisplaySuggestions();
     }
 
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
     protected override void OnVisibleToggle(bool isVisible)
     {
         _SuggestionUITop.gameObject.SetActive(isVisible);

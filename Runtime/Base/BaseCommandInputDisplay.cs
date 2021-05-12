@@ -31,7 +31,7 @@ using UnityEngine;
 public abstract class BaseCommandInputDisplay : MonoBehaviour
 {
     public delegate void OnInputChangedDelegate(string val);
-    public static OnInputChangedDelegate InputChangedDelegate;
+    public static OnInputChangedDelegate InputChangedEvent;
 
     /// <summary>
     /// Is the display visible on screen.
@@ -42,11 +42,6 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// Get whether the display is visible on the screen.
     /// </summary>
     public bool IsVisible => _IsVisible;
-
-    private void Awake()
-    {
-        BindOnInputChangedToAction(new Action<string>(OnTextChanged));
-    }
 
     /// <summary>
     /// Toggle the display visibility.
@@ -81,15 +76,13 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// </summary>
     protected internal abstract void Focus();
 
-    protected void OnTextChanged(string val)
-    {
-        if (InputChangedDelegate != null)
-            InputChangedDelegate(val);
-    }
-
     /// <summary>
-    /// Bind the change of the input to the action that should be fired on that change.
+    /// Trigger the public text changed event: <see cref="InputChangedEvent"/>.
     /// </summary>
-    /// <param name="triggerOnTextChanged">The action to fire when the input field is changed.</param>
-    protected abstract void BindOnInputChangedToAction(Action<string> triggerOnTextChanged);
+    /// <param name="val">Value to which the text changed to.</param>
+    protected void TriggerTextChanged(string val)
+    {
+        if (InputChangedEvent != null)
+            InputChangedEvent(val);
+    }
 }
