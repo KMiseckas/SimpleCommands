@@ -66,8 +66,8 @@ namespace SimpleCommands
 
             for (int i = 0; i < children.Count; i++)
             {
-                currPrefix += children[i].Character;
-                FindWordsUnderNode(children[i], currPrefix, ref results);
+                string word = currPrefix + children[i].Character;
+                FindWordsUnderNode(children[i], word, ref results);
             }
         }
     }

@@ -56,9 +56,9 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
 
             for (int j = 0; j < command.ParamInfo.Length; j++)
             {
-                commandKeyBox.text += command.ParamInfo[j].Type;
+                commandKeyBox.text += " <" + command.ParamInfo[j].Type.Name + ">";
 
-                if(command.ParamInfo[i].IsOptional)
+                if(command.ParamInfo[j].IsOptional)
                 {
                     commandKeyBox.text += "(opt)";
                 }
@@ -67,7 +67,7 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
             commandDescBox.text = command.CommandDesc;
 
             suggestionBtn.localScale = new Vector3(1, 1, 1);
-            suggestionBtn.anchoredPosition = new Vector2(0, _SuggestionButtonList.Count * _SuggestionButtonTemplate.rect.height);
+            suggestionBtn.anchoredPosition = new Vector2(0, -_SuggestionButtonList.Count * _SuggestionButtonTemplate.rect.height);
 
             //Bind the on click event to the method that will fire of our selection event.
             suggestionBtn.GetComponent<Button>().onClick.AddListener(() => TriggerSelectedCommandSuggestion(command));
