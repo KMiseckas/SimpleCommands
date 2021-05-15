@@ -42,22 +42,26 @@ public class StaticMethodTest : MonoBehaviour
 
     }
 
+    [SCCommand("test223")]
     public static void OverloadedMethod(int a)
     {
 
     }
 
+    [SCCommand("test113")]
     public static void OverloadedMethod(int a, int b)
     {
 
     }
 
-    public static void OutParamMethod(int a, out string b)
+    [SCCommand("test13")]
+    public static void OutParamMethod(int a,string b)
     {
         b = "Output String";
     }
 
-    public static void OptionalParamMethod(int a, int b = 0, string c = "")
+    [SCCommand("test12")]
+    public static void OptionalParamMethod(int a, int b)
     {
 
     }

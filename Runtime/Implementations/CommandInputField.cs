@@ -50,13 +50,6 @@ public class CommandInputField : BaseCommandInputDisplay
     [SerializeField]
     private InputField _InputField;
 
-    /// <summary>
-    /// The suggestion text field component where the suggested text will be shown into and rendered.
-    /// </summary>
-    [FormerlySerializedAs("suggestion_text_field_gameobject")]
-    [SerializeField]
-    private Text _SuggestionText;
-
     private void Awake()
     {
         _InputField.onValueChanged.AddListener(TriggerTextChanged);
@@ -72,7 +65,6 @@ public class CommandInputField : BaseCommandInputDisplay
         if(!isVisible)
         {
             _InputField.text = "";
-            _SuggestionText.text = "";
         }
     }
 

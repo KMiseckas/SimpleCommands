@@ -13,11 +13,15 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
 {
     [FormerlySerializedAs("suggestion_console_top_view_ui")]
     [SerializeField]
-    private RectTransform _SuggestionUITop;
+    private RectTransform _SuggestionUIRoot;
+
+    [FormerlySerializedAs("scroll_bar_object")]
+    [SerializeField]
+    private ScrollRect _ScrollRect;
 
     [FormerlySerializedAs("suggestion_console_top_view_ui")]
     [SerializeField]
-    private int _MaxSuggestionsToDisplay = 5;
+    private int _MaxSuggestionsToDisplay = 20;
 
     [SerializeField]
     private RectTransform _SuggestionButtonTemplate;
@@ -26,6 +30,18 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     /// List of all the buttons that have been created for suggestions display.
     /// </summary>
     private List<RectTransform> _SuggestionButtonList = new List<RectTransform>();
+
+    private bool _IsSuggestionPanelEmpty = false;
+
+    private RectTransform _ScrollRectTransform;
+
+    [SerializeField]
+    private float _MaxSuggetionPanelHeight = 175;
+
+    private void Awake()
+    {
+        _ScrollRectTransform = _ScrollRect.GetComponent<RectTransform>();
+    }
 
     /// <summary>
     /// Display the suggestions onto the UI for the user to pick out from.
@@ -45,7 +61,7 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
         {
             RectTransform suggestionBtn = Instantiate(_SuggestionButtonTemplate);
             suggestionBtn.gameObject.SetActive(true);
-            suggestionBtn.SetParent(_SuggestionUITop);
+            suggestionBtn.SetParent(_ScrollRect.content);
 
             Text commandKeyBox = suggestionBtn.Find("Command Key").GetComponent<Text>();
             Text commandDescBox = suggestionBtn.Find("Command Desc").GetComponent<Text>();
@@ -74,6 +90,19 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
 
             _SuggestionButtonList.Add(suggestionBtn);
         }
+
+        Vector2 currentSize = _ScrollRect.content.sizeDelta;
+        currentSize.y = _SuggestionButtonList.Count * _SuggestionButtonTemplate.rect.height;
+
+        _ScrollRect.content.sizeDelta = currentSize;
+
+        Vector2 scrollRectSize = _ScrollRect.GetComponent<RectTransform>().sizeDelta;
+        scrollRectSize.y = Math.Min(currentSize.y, _MaxSuggetionPanelHeight);
+
+        _ScrollRect.GetComponent<RectTransform>().sizeDelta = scrollRectSize;
+
+        //Move to the top of the scroll view when new text is displayed.
+        _ScrollRect.verticalNormalizedPosition = 1;
     }
 
     /// <summary>
@@ -83,7 +112,20 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     {
         base.SetSuggestedCommands(suggestedCommands);
 
-        DisplaySuggestions();
+        if (_SuggestedCommandList.Count > 0)
+        {
+            _IsSuggestionPanelEmpty = false;
+
+            _SuggestionUIRoot.gameObject.SetActive(true);
+
+            DisplaySuggestions();
+        }
+        else if(!_IsSuggestionPanelEmpty)
+        {
+            _IsSuggestionPanelEmpty = true;
+
+            _SuggestionUIRoot.gameObject.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -91,6 +133,6 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     /// </summary>
     protected override void OnVisibleToggle(bool isVisible)
     {
-        _SuggestionUITop.gameObject.SetActive(isVisible);
+        _SuggestionUIRoot.gameObject.SetActive(isVisible);
     }
 }
