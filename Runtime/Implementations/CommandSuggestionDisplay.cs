@@ -133,6 +133,8 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     /// </summary>
     protected override void OnVisibleToggle(bool isVisible)
     {
-        _SuggestionUIRoot.gameObject.SetActive(isVisible);
+        _IsSuggestionPanelEmpty = _SuggestedCommandList.Count <= 0;
+
+        _SuggestionUIRoot.gameObject.SetActive(!_IsSuggestionPanelEmpty);
     }
 }
