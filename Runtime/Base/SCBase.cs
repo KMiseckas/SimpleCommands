@@ -219,7 +219,6 @@ namespace SimpleCommands
             BindAction(IssueCommand, "Issue");
             BindAction(PreviousCommand, "Previous");
             BindAction(NextCommand, "Next");
-            BindAction(AutoCompleteOnTabInput, "AutoComplete");
 
             BaseCommandInputDisplay.InputChangedEvent += OnCommandInputTextChanged;
             BaseCommandSuggestionDisplay.SelectedCommandSuggestionEvent += OnSuggestedCommandSelected;
@@ -344,16 +343,6 @@ namespace SimpleCommands
             }
 
             _InputPanel.OverrideInputString(commandString);
-        }
-
-        /// <summary>
-        /// Override the input panel text with the first string in the suggestions.
-        /// </summary>
-        private void AutoCompleteOnTabInput(InputAction.CallbackContext obj)
-        {
-            if (_CurrentCommandSuggestions.Count == 0) return;
-
-            AutoCompleteInputField(_CurrentCommandSuggestions[0].CommandKey);
         }
 
         /// <summary>
