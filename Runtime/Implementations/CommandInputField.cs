@@ -89,6 +89,20 @@ public class CommandInputField : BaseCommandInputDisplay
     /// </summary>
     protected internal override void Focus()
     {
+        StartCoroutine(FocusOnTextField());
+    }
+
+    /// <summary>
+    /// Coroutine that focuses the input onto the input field and at the ed of the frame moves the caret to the end of the text input 
+    /// field and removes the highlight from the whole input text.
+    /// </summary>
+    private IEnumerator FocusOnTextField()
+    {
         _InputField.ActivateInputField();
+
+        yield return new WaitForEndOfFrame();
+
+        _InputField.caretPosition = _InputField.text.Length;
+        _InputField.ForceLabelUpdate();
     }
 }

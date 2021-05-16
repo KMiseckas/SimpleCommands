@@ -386,6 +386,7 @@ namespace SimpleCommands
         protected virtual void OnSuggestedCommandSelected(SCCommand command)
         {
             InputPanel.OverrideInputString(command.CommandKey);
+            InputPanel.Focus();
         }
 
         /// <summary>
