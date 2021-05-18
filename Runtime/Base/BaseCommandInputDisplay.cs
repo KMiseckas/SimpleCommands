@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,6 +30,9 @@ using UnityEngine;
 /// </summary>
 public abstract class BaseCommandInputDisplay : MonoBehaviour
 {
+    public delegate void OnInputChangedDelegate(string val);
+    public static OnInputChangedDelegate InputChangedEvent;
+
     /// <summary>
     /// Is the display visible on screen.
     /// </summary>
@@ -53,7 +57,7 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// Invoke on visibilty toggle.
     /// </summary>
     /// <param name="isVisible">True if toggled to visible.</param>
-    protected internal abstract void OnVisibleToggle(bool isVisible);
+    protected abstract void OnVisibleToggle(bool isVisible);
 
     /// <summary>
     /// Get the currently visible string in the input field text display.
@@ -71,4 +75,14 @@ public abstract class BaseCommandInputDisplay : MonoBehaviour
     /// Focus the input field to allow input.
     /// </summary>
     protected internal abstract void Focus();
+
+    /// <summary>
+    /// Trigger the public text changed event: <see cref="InputChangedEvent"/>.
+    /// </summary>
+    /// <param name="val">Value to which the text changed to.</param>
+    protected void TriggerTextChanged(string val)
+    {
+        if (InputChangedEvent != null)
+            InputChangedEvent(val);
+    }
 }

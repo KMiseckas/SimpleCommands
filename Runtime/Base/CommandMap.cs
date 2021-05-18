@@ -22,6 +22,7 @@
 
 using SimpleCommands.Attributes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine.Assertions;
@@ -64,7 +65,19 @@ namespace SimpleCommands
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public bool GetCommand(string commandKey, out SCCommand command)
+        public string[] GetAllCommandKeys()
+        {
+            ICollection collection = _CommandMap.Keys;
+
+            List<string> stringList = new List<string>((IEnumerable<string>)collection);
+
+            return stringList.ToArray();
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public bool TryGetCommand(string commandKey, out SCCommand command)
         {
             return _CommandMap.TryGetValue(commandKey, out command);
         }

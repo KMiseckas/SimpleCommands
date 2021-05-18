@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -48,10 +50,15 @@ public class CommandInputField : BaseCommandInputDisplay
     [SerializeField]
     private InputField _InputField;
 
+    private void Awake()
+    {
+        _InputField.onValueChanged.AddListener(TriggerTextChanged);
+    }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    protected internal override void OnVisibleToggle(bool isVisible)
+    protected override void OnVisibleToggle(bool isVisible)
     {
         _InputUITop.gameObject.SetActive(isVisible);
 
@@ -82,6 +89,20 @@ public class CommandInputField : BaseCommandInputDisplay
     /// </summary>
     protected internal override void Focus()
     {
+        StartCoroutine(FocusOnTextField());
+    }
+
+    /// <summary>
+    /// Coroutine that focuses the input onto the input field and at the ed of the frame moves the caret to the end of the text input 
+    /// field and removes the highlight from the whole input text.
+    /// </summary>
+    private IEnumerator FocusOnTextField()
+    {
         _InputField.ActivateInputField();
+
+        yield return new WaitForEndOfFrame();
+
+        _InputField.caretPosition = _InputField.text.Length;
+        _InputField.ForceLabelUpdate();
     }
 }
