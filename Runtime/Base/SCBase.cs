@@ -137,6 +137,9 @@ namespace SimpleCommands
         /// </summary>
         public BaseCommandInputDisplay InputPanel => _InputPanel;
 
+        /// <summary>
+        /// Get instance of BaseCommandSuggestionDisplay.
+        /// </summary>
         public BaseCommandSuggestionDisplay SuggestionDisplay => _SuggestionPanel;
 
         /// <summary>

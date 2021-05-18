@@ -119,7 +119,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3306111307824321426}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999997
+  m_Size: 0.99969804
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -157,7 +157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000061035156, y: 0.000059946444}
+  m_AnchoredPosition: {x: -0.000061035156, y: 0.00005766856}
   m_SizeDelta: {x: 0.00012207031, y: 193.30359}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &973841436198835685
@@ -939,7 +939,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _SuggestionUIRoot: {fileID: 3016005723000026461}
   _ScrollRect: {fileID: 5860391980748883410}
-  _MaxSuggestionsToDisplay: 8
+  _MaxSuggestionsToDisplay: 20
   _SuggestionButtonTemplate: {fileID: 1394222104193447057}
   _MaxSuggetionPanelHeight: 175
 --- !u!1 &5238529608998482871
@@ -2000,7 +2000,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8671601720691164442}
   m_HandleRect: {fileID: 8671601720691164443}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
