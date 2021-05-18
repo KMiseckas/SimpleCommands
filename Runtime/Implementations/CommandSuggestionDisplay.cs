@@ -11,18 +11,30 @@ using UnityEngine.UI;
 /// </summary>
 public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
 {
+    /// <summary>
+    /// The root of the suggestion UI panel.
+    /// </summary>
     [FormerlySerializedAs("suggestion_console_top_view_ui")]
     [SerializeField]
     private RectTransform _SuggestionUIRoot;
 
+    /// <summary>
+    /// The reference to the ScrollRect object.
+    /// </summary>
     [FormerlySerializedAs("scroll_bar_object")]
     [SerializeField]
     private ScrollRect _ScrollRect;
 
+    /// <summary>
+    /// The max number of auto-complete suggestions that the suggestions panel should display.
+    /// </summary>
     [FormerlySerializedAs("suggestion_console_top_view_ui")]
     [SerializeField]
     private int _MaxSuggestionsToDisplay = 20;
 
+    /// <summary>
+    /// The template object to use when creating an autocomplete suggestion clickable area.
+    /// </summary>
     [SerializeField]
     private RectTransform _SuggestionButtonTemplate;
 
@@ -31,17 +43,17 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     /// </summary>
     private List<RectTransform> _SuggestionButtonList = new List<RectTransform>();
 
+    /// <summary>
+    /// Is the suggestion panel currently empty of any autocomplete suggestions.
+    /// </summary>
     private bool _IsSuggestionPanelEmpty = false;
 
-    private RectTransform _ScrollRectTransform;
-
+    /// <summary>
+    /// The max size in pixels of the suggestion panel.
+    /// </summary>
     [SerializeField]
     private float _MaxSuggetionPanelHeight = 175;
 
-    private void Awake()
-    {
-        _ScrollRectTransform = _ScrollRect.GetComponent<RectTransform>();
-    }
 
     /// <summary>
     /// Display the suggestions onto the UI for the user to pick out from.

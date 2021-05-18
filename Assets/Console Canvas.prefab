@@ -875,7 +875,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _SuggestionUIRoot: {fileID: 3016005723000026461}
   _ScrollRect: {fileID: 5860391980748883410}
-  _MaxSuggestionsToDisplay: 8
+  _MaxSuggestionsToDisplay: 20
   _SuggestionButtonTemplate: {fileID: 1394222104193447057}
   _MaxSuggetionPanelHeight: 175
 --- !u!1 &5238529608998482871
@@ -1925,8 +1925,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8671601720691164442}
   m_HandleRect: {fileID: 8671601720691164443}
   m_Direction: 2
-  m_Value: 0.00000093183183
-  m_Size: 0.9276641
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2272,8 +2272,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 32.750027}
-  m_SizeDelta: {x: -9.466431, y: 452.75006}
+  m_AnchoredPosition: {x: 0, y: -0.000054539396}
+  m_SizeDelta: {x: -9.466431, y: 419.99994}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &8915701441310423158
 GameObject:
