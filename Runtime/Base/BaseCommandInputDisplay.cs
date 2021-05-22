@@ -28,36 +28,10 @@ using UnityEngine;
 /// <summary>
 /// The abstract input display that is used for input text rendering.
 /// </summary>
-public abstract class BaseCommandInputDisplay : MonoBehaviour
+public abstract class BaseCommandInputDisplay : Display
 {
     public delegate void OnInputChangedDelegate(string val);
     public static OnInputChangedDelegate InputChangedEvent;
-
-    /// <summary>
-    /// Is the display visible on screen.
-    /// </summary>
-    private bool _IsVisible = false;
-
-    /// <summary>
-    /// Get whether the display is visible on the screen.
-    /// </summary>
-    public bool IsVisible => _IsVisible;
-
-    /// <summary>
-    /// Toggle the display visibility.
-    /// </summary>
-    public void ToggleVisible()
-    {
-        _IsVisible = !IsVisible;
-
-        OnVisibleToggle(IsVisible);
-    }
-
-    /// <summary>
-    /// Invoke on visibilty toggle.
-    /// </summary>
-    /// <param name="isVisible">True if toggled to visible.</param>
-    protected abstract void OnVisibleToggle(bool isVisible);
 
     /// <summary>
     /// Get the currently visible string in the input field text display.

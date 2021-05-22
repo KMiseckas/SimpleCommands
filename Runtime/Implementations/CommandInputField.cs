@@ -58,7 +58,7 @@ public class CommandInputField : BaseCommandInputDisplay
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    protected override void OnVisibleToggle(bool isVisible)
+    protected override void OnVisibilityChanged(bool isVisible)
     {
         _InputUITop.gameObject.SetActive(isVisible);
 

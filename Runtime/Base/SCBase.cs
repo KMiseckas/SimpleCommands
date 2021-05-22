@@ -85,22 +85,22 @@ namespace SimpleCommands
         protected ICommandInputParser _CommandInputParser;
 
         /// <summary>
-        /// The panel display which will show the output text.
+        /// The display which will show the output text.
         /// </summary>
         [SerializeField]
-        private BaseCommandOutputDisplay _OutputPanel;
+        private BaseCommandOutputDisplay _OutputDisplay;
 
         /// <summary>
-        /// The panel display which will display and allow the user to input text.
+        /// The display which will display and allow the user to input text.
         /// </summary>
         [SerializeField]
-        private BaseCommandInputDisplay _InputPanel;
+        private BaseCommandInputDisplay _InputDisplay;
 
         /// <summary>
-        /// The panel display which will display and allow the user to selected suggested commands.
+        /// The display which will display and allow the user to selected suggested commands.
         /// </summary>
         [SerializeField]
-        private BaseCommandSuggestionDisplay _SuggestionPanel;
+        private BaseCommandSuggestionDisplay _SuggestionDisplay;
 
         /// <summary>
         /// Implementation instance of the <see cref="ITextSuggester"/>.
@@ -130,17 +130,17 @@ namespace SimpleCommands
         /// <summary>
         /// Get instance of <see cref="BaseCommandOutputDisplay"/>.
         /// </summary>
-        public BaseCommandOutputDisplay OutputPanel => _OutputPanel;
+        public BaseCommandOutputDisplay OutputDisplay => _OutputDisplay;
 
         /// <summary>
         /// Get instance of <see cref="BaseCommandInputDisplay"/>.
         /// </summary>
-        public BaseCommandInputDisplay InputPanel => _InputPanel;
+        public BaseCommandInputDisplay InputDisplay => _InputDisplay;
 
         /// <summary>
         /// Get instance of BaseCommandSuggestionDisplay.
         /// </summary>
-        public BaseCommandSuggestionDisplay SuggestionDisplay => _SuggestionPanel;
+        public BaseCommandSuggestionDisplay SuggestionDisplay => _SuggestionDisplay;
 
         /// <summary>
         /// Get instance of <see cref="ITextSuggester"/>.
@@ -257,12 +257,26 @@ namespace SimpleCommands
         /// </summary>
         private void ToggleConsole(InputAction.CallbackContext obj)
         {
-            _InputPanel.ToggleVisible();
-            _OutputPanel.ToggleVisible();
-            _SuggestionPanel.ToggleVisible();
+            _InputDisplay.SetVisible(!_InputDisplay.IsVisible);
+            _OutputDisplay.SetVisible(!_OutputDisplay.IsVisible);
+            _SuggestionDisplay.SetVisible(!_SuggestionDisplay.IsVisible);
 
-            if(_InputPanel.IsVisible)
-                _InputPanel.Focus();
+            if(_InputDisplay.IsVisible)
+                _InputDisplay.Focus();
+        }
+
+        /// <summary>
+        /// Set the console display objects as visible or hidden.
+        /// </summary>
+        /// <param name="isVisible">Whether the displays should be visible.</param>
+        protected virtual void SetVisible(bool isVisible)
+        {
+            _InputDisplay.SetVisible(isVisible);
+            _OutputDisplay.SetVisible(isVisible);
+            _SuggestionDisplay.SetVisible(isVisible);
+
+            if (_InputDisplay.IsVisible)
+                _InputDisplay.Focus();
         }
 
         /// <summary>
@@ -280,7 +294,7 @@ namespace SimpleCommands
         {
             CommandInputInfo commandInputInfo = null;
 
-            string inputString = _InputPanel.GetInputString();
+            string inputString = _InputDisplay.GetInputString();
 
             if(!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
                 return;
@@ -309,10 +323,10 @@ namespace SimpleCommands
                 }
             }
 
-            _InputPanel.OverrideInputString("");
+            _InputDisplay.OverrideInputString("");
 
             if(_AutoFocusPostCommand)
-                _InputPanel.Focus();
+                _InputDisplay.Focus();
         }
 
         /// <summary>
@@ -323,7 +337,7 @@ namespace SimpleCommands
             if(_CurrentlyDisplayedCommand == null)
                 return;
 
-            _InputPanel.OverrideInputString(_CurrentlyDisplayedCommand.Value);
+            _InputDisplay.OverrideInputString(_CurrentlyDisplayedCommand.Value);
 
             LinkedListNode<string> temp = _CurrentlyDisplayedCommand;
             _CurrentlyDisplayedCommand = _CurrentlyDisplayedCommand.Next == null ? temp : _CurrentlyDisplayedCommand.Next;
@@ -345,7 +359,7 @@ namespace SimpleCommands
                 commandString = _CurrentlyDisplayedCommand.Value;
             }
 
-            _InputPanel.OverrideInputString(commandString);
+            _InputDisplay.OverrideInputString(commandString);
         }
 
         /// <summary>
@@ -354,7 +368,7 @@ namespace SimpleCommands
         /// <param name="targetString">What to fill the text field with.</param>
         protected virtual void AutoCompleteInputField(string targetString)
         {
-            _InputPanel.OverrideInputString(targetString);
+            _InputDisplay.OverrideInputString(targetString);
         }
 
         /// <summary>
@@ -379,17 +393,17 @@ namespace SimpleCommands
                 }
             }
 
-            _SuggestionPanel.SetSuggestedCommands(_CurrentCommandSuggestions);
+            _SuggestionDisplay.SetSuggestedCommands(_CurrentCommandSuggestions);
         }
 
         /// <summary>
-        /// Logic to run once a suggestion has been selected from the suggestion panel.
+        /// Logic to run once a suggestion has been selected from the suggestion display.
         /// </summary>
         /// <param name="command">Command that has been selected.</param>
         protected virtual void OnSuggestedCommandSelected(SCCommand command)
         {
-            InputPanel.OverrideInputString(command.CommandKey);
-            InputPanel.Focus();
+            InputDisplay.OverrideInputString(command.CommandKey);
+            InputDisplay.Focus();
         }
 
         /// <summary>
@@ -398,7 +412,7 @@ namespace SimpleCommands
         /// <param name="output">Output to display.</param>
         public static void OutConsole(string output)
         {
-            Instance._OutputPanel.Output(output);
+            Instance._OutputDisplay.Output(output);
         }
     }
 }

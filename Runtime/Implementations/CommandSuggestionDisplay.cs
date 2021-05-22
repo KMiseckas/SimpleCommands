@@ -143,7 +143,7 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    protected override void OnVisibleToggle(bool isVisible)
+    protected override void OnVisibilityChanged(bool isVisible)
     {
         _IsSuggestionPanelEmpty = _SuggestedCommandList.Count <= 0;
 

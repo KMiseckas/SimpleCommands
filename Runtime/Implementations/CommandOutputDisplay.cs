@@ -49,7 +49,7 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    protected internal override void OnVisibleToggle(bool isVisible)
+    protected override void OnVisibilityChanged(bool isVisible)
     {
         _OutputUITop.gameObject.SetActive(isVisible);
     }
