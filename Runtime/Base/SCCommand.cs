@@ -88,7 +88,7 @@ namespace SimpleCommands
         /// <param name="output">The string message output received from the execution proccess for the console output.</param>
         /// <param name="targetInfo">The target info to tell on what to execute the commands intent on.</param>
         /// <returns>True if execution succeeded.</returns>
-        internal bool TryExecute(string[] paramVals, out string output, TargetInfo targetInfo = default)
+        internal bool TryExecute(ITargetParser targetParserMap, string[] paramVals, out string output, TargetInfo targetInfo = default)
         {
             Assert.IsNotNull(paramVals);
 
@@ -110,7 +110,7 @@ namespace SimpleCommands
 
             if(!Method.IsStatic)
             {
-                instanceFound = TryFindInstanceByID(targetInfo.IDType, targetInfo.ID, out targetInstances);
+                instanceFound = TryFindTargetsFromID(targetParserMap, targetInfo.IDType, targetInfo.ID, out targetInstances);
             }
 
             try
@@ -122,9 +122,14 @@ namespace SimpleCommands
                         Method.Invoke(targetInstances[i], parsedParams);
                     }
                 }
-                else
+                else if(Method.IsStatic)
                 {
                     Method.Invoke(null, parsedParams);
+                }
+                else
+                {
+                    output = $"Execution for command `{CommandKey}` has failed. No instance found when searching for `[{targetInfo.IDType}={targetInfo.ID}]`in the scene.";
+                    return false;
                 }
             }
             catch(Exception exception)
@@ -136,84 +141,31 @@ namespace SimpleCommands
             return true;
         }
 
-        /// <summary>
-        /// Attempt to find an instance or instances on which to invoke the intent of the command on.
-        /// </summary>
-        /// <param name="idType">The type of target ID that has been given for this command.</param>
-        /// <param name="id">String ID of the object to execute the intent on. Different targets will require different IDs.</param>
-        /// <param name="targetObjects">Output array of objects to execute the commands intent on.</param>
-        /// <returns>True if instance found.</returns>
-        private bool TryFindInstanceByID(TargetIDType idType, string id, out object[] targetObjects)
+        internal virtual bool TryFindTargetsFromID(ITargetParser parserMap, string idType, string id, out object[] targetObjects)
         {
-            //TODO add failure output strings.
             targetObjects = null;
 
-            switch(idType)
+            if (!parserMap.TryGetParser(idType, out Func<SCCommand, string, object[]> targetFinderFunc))
             {
-                case TargetIDType.None:
-                    targetObjects = GameObject.FindObjectsOfType(ClassType);
-                    break;
-
-                case TargetIDType.Tag:
-                    GameObject[] gameObjectsByTag = null;
-
-                    try
-                    {
-                        gameObjectsByTag = GameObject.FindGameObjectsWithTag(id);
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-
-                    gameObjectsByTag = gameObjectsByTag.Length > 0 ? gameObjectsByTag : null;
-
-                    if(gameObjectsByTag == null)
-                        return false;
-
-                    List<object> components = new List<object>();
-
-                    for(int i = 0; i < gameObjectsByTag.Length; i++)
-                    {
-                        GameObject gameObject = gameObjectsByTag[i];
-
-                        object component = gameObject.GetComponent(ClassType);
-
-                        if(component != null)
-                        {
-                            components.Add(component);
-                        }
-                    }
-
-                    if(components.Count > 0)
-                    {
-                        targetObjects = components.ToArray();
-                    }
-
-                    break;
-
-                case TargetIDType.InstanceID:
-
-                    if(!int.TryParse(id, out int intID))
-                    {
-                        return false;
-                    }
-
-                    targetObjects = new object[1];
-                    GameObject[] gameObjectsByID = GameObject.FindObjectsOfType<GameObject>();
-
-                    for(int i = 0; i < gameObjectsByID.Length; i++)
-                    {
-                        if(gameObjectsByID[i].GetInstanceID() == intID)
-                        {
-                            targetObjects[0] = gameObjectsByID[i];
-                        }
-                    }
-
-                    break;
+                return false;
             }
 
-            return true;
+            try
+            {
+                targetObjects = targetFinderFunc.Invoke(this, id);
+            }
+            catch (Exception e)
+            {
+                SCBase.OutConsole(e.Message);
+                return false;
+            }
+
+            if(targetObjects == null)
+            {
+                return false;
+            }
+
+            return targetObjects.Length > 0;
         }
 
         /// <summary>
@@ -303,26 +255,11 @@ namespace SimpleCommands
         /// <summary>
         /// Type of target.
         /// </summary>
-        internal TargetIDType IDType;
+        internal string IDType;
 
         /// <summary>
         /// Target type ID by which to identify the specific target. Different target types may have different ID formats.
         /// </summary>
         internal string ID;
-    }
-
-    /// <summary>
-    /// Target types supported by default.<br/><br/>
-    /// - Tag: Unity tag system, where ID is the name of the tag.<br/>
-    /// - InstanceID: Unity object unique ID, where ID is the unique numerical ID of the object at runtime.<br/>
-    /// - None: Will execute the intent on all found instances.<br/><br/>
-    /// 
-    /// Static methods will not reach this functionality and so do not require a target ID assigning to them.
-    /// </summary>
-    public enum TargetIDType
-    {
-        None,
-        Tag,
-        InstanceID
     }
 }

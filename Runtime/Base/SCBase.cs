@@ -85,6 +85,12 @@ namespace SimpleCommands
         protected ICommandInputParser _CommandInputParser;
 
         /// <summary>
+        /// Instance of the ITargetParser that holds the mapping between the string target type to the parser function that provides the objects which to target for command
+        /// execution onto.
+        /// </summary>
+        private ITargetParser _CommandTargetParsers;
+
+        /// <summary>
         /// The display which will show the output text.
         /// </summary>
         [SerializeField]
@@ -148,6 +154,11 @@ namespace SimpleCommands
         public ITextSuggester CommandSuggester => _CommandSuggester;
 
         /// <summary>
+        /// Get instance of <see cref="ITargetParser"/>.
+        /// </summary>
+        public ITargetParser CommandTargetParsers => _CommandTargetParsers;
+
+        /// <summary>
         /// Get or create an instance of this object depending on whether it already exists or not. Thread safe.
         /// </summary>
         public static SCBase Instance
@@ -181,6 +192,7 @@ namespace SimpleCommands
             _CommandMap = CreateCommandMap();
             _CommandInputParser = CreateCommandInputParser();
             _CommandSuggester = CreateCommandSuggester();
+            _CommandTargetParsers = CreateCommandTargetParsers();
 
             //Populate the suggester with the collection of all the command keys.
             _CommandSuggester.AddCollection(_CommandMap.GetAllCommandKeys());
@@ -211,6 +223,16 @@ namespace SimpleCommands
         protected virtual ITextSuggester CreateCommandSuggester()
         {
             return new CommandSuggester();
+        }
+
+        /// <summary>
+        /// Create an implementation instance of the ITargetParser that holds the mapping between the string target type to the parser function that provides the objects 
+        /// which to target for command execution onto.
+        /// </summary>
+        /// <returns>New instance of <see cref="ITargetParser"/> implementation.</returns>
+        protected virtual ITargetParser CreateCommandTargetParsers()
+        {
+            return new CommandTargetParserMap();
         }
 
         /// <summary>
@@ -313,7 +335,7 @@ namespace SimpleCommands
             }
             else
             {
-                if(command.TryExecute(commandInputInfo.CommandParams, out string output, commandInputInfo.TargetInfo))
+                if(command.TryExecute(CommandTargetParsers, commandInputInfo.CommandParams, out string output, commandInputInfo.TargetInfo))
                 {
                     OutConsole($"Executed command `{commandInputInfo.CommandKey}`.");
                 }
