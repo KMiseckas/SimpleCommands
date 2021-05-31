@@ -99,20 +99,21 @@ namespace SimpleCommands
             if(targetDataString.Equals(""))
                 return default;
 
+            TargetInfo result = new TargetInfo();
+
             string[] targetInfoElements = targetDataString.Split('=');
 
             string targetType = targetInfoElements[0].ToLower();
+            result.IDType = targetType;
 
-            if(targetInfoElements.Length <= 1)
-                return default;
+            if (targetInfoElements.Length <= 1)
+                return result;
 
             string[] targetIDs = targetInfoElements[1].Split(',');
 
             if(targetIDs.Length == 0)
-                return default;
+                return result;
 
-            TargetInfo result = new TargetInfo();
-            result.IDType = targetType;
             result.ID = targetIDs[0]; //TODO make this so we can take multiple IDs for the same type, currently we only use the first element in array of the ID strings.
 
             return result;

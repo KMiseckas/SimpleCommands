@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using SimpleCommands.Base.Interfaces;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -128,7 +129,7 @@ namespace SimpleCommands
                 }
                 else
                 {
-                    output = $"Execution for command `{CommandKey}` has failed. No instance found when searching for `[{targetInfo.IDType}={targetInfo.ID}]`in the scene.";
+                    output = $"Execution for command `{CommandKey}` has failed. No instance found when searching for `[{targetInfo.IDType}{(targetInfo.ID != null ? "=" + targetInfo.ID : "")}]`in the scene.";
                     return false;
                 }
             }
@@ -141,9 +142,19 @@ namespace SimpleCommands
             return true;
         }
 
-        internal virtual bool TryFindTargetsFromID(ITargetParser parserMap, string idType, string id, out object[] targetObjects)
+        /// <summary>
+        /// Try find all the objects that are being targeted for the command to be executed from.
+        /// </summary>
+        /// <param name="parserMap">The implemented instance of <see cref="ITargetParser"./></param>
+        /// <param name="idType">Type of ID used to search through all the objects.</param>
+        /// <param name="id">ID of the object(s) to look for.</param>
+        /// <param name="targetObjects">The objects found with specified criteria.</param>
+        /// <returns>True if an object or objects are found.</returns>
+        internal bool TryFindTargetsFromID(ITargetParser parserMap, string idType, string id, out object[] targetObjects)
         {
             targetObjects = null;
+
+            idType = idType?.ToLower();
 
             if (!parserMap.TryGetParser(idType, out Func<SCCommand, string, object[]> targetFinderFunc))
             {

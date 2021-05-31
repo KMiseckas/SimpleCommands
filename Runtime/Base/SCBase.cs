@@ -25,6 +25,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using SimpleCommands.Base;
+using SimpleCommands.Base.Interfaces;
+using SimpleCommands.Implementations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
