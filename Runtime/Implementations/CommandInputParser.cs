@@ -38,21 +38,6 @@ namespace SimpleCommands
     public class CommandInputParser : ICommandInputParser
     {
         /// <summary>
-        /// Key value dictionary between a string ID and the <see cref="TargetIDType"/> it matches to.
-        /// </summary>
-        private Dictionary<string, TargetIDType> _IDTypeStringMap = new Dictionary<string, TargetIDType>();
-
-        /// <summary>
-        /// Create a new instance of the <see cref="CommandInputParser"/>.
-        /// </summary>
-        internal protected CommandInputParser()
-        {
-            _IDTypeStringMap.Add("tag", TargetIDType.Tag);
-            _IDTypeStringMap.Add("t", TargetIDType.Tag);
-            _IDTypeStringMap.Add("id", TargetIDType.InstanceID);
-        }
-
-        /// <summary>
         /// <inheritdoc/>
         /// </summary>
         public bool TryParseCommandInput(string commandInput, out CommandInputInfo commandInputInfo)
@@ -114,25 +99,21 @@ namespace SimpleCommands
             if(targetDataString.Equals(""))
                 return default;
 
+            TargetInfo result = new TargetInfo();
+
             string[] targetInfoElements = targetDataString.Split('=');
 
             string targetType = targetInfoElements[0].ToLower();
+            result.IDType = targetType;
 
-            if(targetInfoElements.Length <= 1)
-                return default;
+            if (targetInfoElements.Length <= 1)
+                return result;
 
             string[] targetIDs = targetInfoElements[1].Split(',');
 
             if(targetIDs.Length == 0)
-                return default;
+                return result;
 
-            if(!_IDTypeStringMap.TryGetValue(targetType, out TargetIDType idType))
-            {
-                return default;
-            }
-
-            TargetInfo result = new TargetInfo();
-            result.IDType = idType;
             result.ID = targetIDs[0]; //TODO make this so we can take multiple IDs for the same type, currently we only use the first element in array of the ID strings.
 
             return result;
