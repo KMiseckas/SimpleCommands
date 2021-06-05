@@ -75,12 +75,19 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
             suggestionBtn.gameObject.SetActive(true);
             suggestionBtn.SetParent(_ScrollRect.content);
 
-            Text commandKeyBox = suggestionBtn.Find("Command Key").GetComponent<Text>();
-            Text commandDescBox = suggestionBtn.Find("Command Desc").GetComponent<Text>();
+            SuggestionButton suggestionButtonComp = suggestionBtn.GetComponent<SuggestionButton>();
+
+            Text commandKeyBox = suggestionButtonComp.CommandKeyText;
+            Text commandDescBox = suggestionButtonComp.CommandDescText;
 
             SCCommand command = _SuggestedCommandList[i];
 
             commandKeyBox.text = command.CommandKey;
+            
+            if(!command.Method.IsStatic)
+            {
+                commandKeyBox.text += " {target}";
+            }
 
             for (int j = 0; j < command.ParamInfo.Length; j++)
             {
