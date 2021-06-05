@@ -179,7 +179,7 @@ namespace SimpleCommands
             }
         }
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if(_Instance != null)
             {
