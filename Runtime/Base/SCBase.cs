@@ -323,6 +323,8 @@ namespace SimpleCommands
             if(!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
                 return;
 
+            OutConsole(inputString, OutputType.FROM_INPUT);
+
             _CommandHistory.AddFirst(inputString);
             _CurrentlyDisplayedCommand = _CommandHistory.First;
 

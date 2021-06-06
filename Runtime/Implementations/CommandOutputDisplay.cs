@@ -55,7 +55,10 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     private bool _DatePrefix = false;
 
     [SerializeField]
-    private bool _LineNumberPrefix = true;
+    private bool _LineNumberPrefix = false;
+
+    [SerializeField]
+    private bool _InOutPrefix = false;
 
     /// <summary>
     /// Saved log history.
@@ -132,6 +135,13 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
             prefix += $"[{DateTime.Now.ToString("yyyy-MM-dd")}]";
         if (_TimePrefix)
             prefix += $"[{DateTime.Now.ToString("HH:mm:ss")}]";
+        if (_InOutPrefix)
+        {
+            if (isOuputFromInput)
+                prefix += "[IN]";
+            else
+                prefix += "[OUT]";
+        }
 
         return prefix + ": ";
     }
