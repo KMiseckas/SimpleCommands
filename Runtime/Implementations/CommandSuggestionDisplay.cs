@@ -54,6 +54,8 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
     [SerializeField]
     private float _MaxSuggetionPanelHeight = 175;
 
+    [SerializeField]
+    private ConsoleTextColours _ConsoleColours;
 
     /// <summary>
     /// Display the suggestions onto the UI for the user to pick out from.
@@ -82,24 +84,32 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
 
             SCCommand command = _SuggestedCommandList[i];
 
-            commandKeyBox.text = command.CommandKey;
-            
-            if(!command.Method.IsStatic)
+            string commandCol = $"<color=#{_ConsoleColours.CommandColorHex}>";
+            string targetCol = $"<color=#{_ConsoleColours.TargetColourHex}>";
+            string typeCol = $"<color=#{_ConsoleColours.TypeColorHex}>";
+            string descCol = $"<color=#{_ConsoleColours.DescriptionColorHex}>";
+            string endCol = "</color>";
+
+            commandKeyBox.text = commandCol + command.CommandKey + endCol;
+
+
+            if (!command.Method.IsStatic)
             {
-                commandKeyBox.text += " {target}";
+                commandKeyBox.text += $" {targetCol}[target]{endCol}";
+
             }
 
             for (int j = 0; j < command.ParamInfo.Length; j++)
             {
-                commandKeyBox.text += " <" + command.ParamInfo[j].Type.Name + ">";
+                commandKeyBox.text += $" {typeCol}<{command.ParamInfo[j].Type.Name}>{endCol}";
 
                 if(command.ParamInfo[j].IsOptional)
                 {
-                    commandKeyBox.text += "(opt)";
+                    commandKeyBox.text += $"{typeCol}(opt){endCol}";
                 }
             }
 
-            commandDescBox.text = command.CommandDesc;
+            commandDescBox.text = descCol + command.CommandDesc + endCol;
 
             suggestionBtn.localScale = new Vector3(1, 1, 1);
             suggestionBtn.anchoredPosition = new Vector2(0, -_SuggestionButtonList.Count * _SuggestionButtonTemplate.rect.height);

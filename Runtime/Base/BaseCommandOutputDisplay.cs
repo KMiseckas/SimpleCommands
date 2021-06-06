@@ -33,5 +33,5 @@ public abstract class BaseCommandOutputDisplay : Display
     /// Output a string message to the display.
     /// </summary>
     /// <param name="outputMessage">String message.</param>
-    public abstract void Output(string outputMessage);
+    public abstract void Output(string outputMessage, OutputType outputType = OutputType.NONE);
 }
