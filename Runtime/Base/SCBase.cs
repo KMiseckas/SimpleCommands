@@ -337,13 +337,13 @@ namespace SimpleCommands
             }
             else
             {
-                if(command.TryExecute(CommandTargetParsers, commandInputInfo.CommandParams, out string output, commandInputInfo.TargetInfo))
+                if(command.TryExecute(CommandTargetParsers, commandInputInfo.CommandParams, out string failOutput, commandInputInfo.TargetInfo))
                 {
-                    OutConsole($"Executed command `{commandInputInfo.CommandKey}`.");
+                    OutConsole($"Executed command `{commandInputInfo.CommandKey}`.", OutputType.SUCCESS);
                 }
                 else
                 {
-                    OutConsole(output);
+                    OutConsole(failOutput, OutputType.ERROR);
                 }
             }
 
@@ -434,9 +434,9 @@ namespace SimpleCommands
         /// Output text to the console for rendering.
         /// </summary>
         /// <param name="output">Output to display.</param>
-        public static void OutConsole(string output)
+        public static void OutConsole(string output, OutputType outputType = OutputType.NONE)
         {
-            Instance._OutputDisplay.Output(output);
+            Instance._OutputDisplay.Output(output, outputType);
         }
     }
 }

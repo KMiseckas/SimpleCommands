@@ -2177,6 +2177,11 @@ MonoBehaviour:
   _OutputUITop: {fileID: 8671601721998182084}
   _ScrollRect: {fileID: 8671601721295799120}
   _TextField: {fileID: 8671601721999577305}
+  _TimePrefix: 1
+  _DatePrefix: 0
+  _LineNumber: 1
+  _InputOutputArrows: 1
+  _ConsoleColours: {fileID: 11400000, guid: 4154b077f08c8264983a4a858c610a37, type: 2}
 --- !u!1 &8671601721999577303
 GameObject:
   m_ObjectHideFlags: 0

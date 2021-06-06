@@ -17,25 +17,22 @@ MonoBehaviour:
     rgba: 4285843572
   _TypeColor:
     serializedVersion: 2
-    rgba: 4285130217
+    rgba: 4286178535
   _DescriptionColor:
     serializedVersion: 2
     rgba: 4293717228
   _WarningColor:
     serializedVersion: 2
-    rgba: 4285032633
+    rgba: 4284580808
   _ErrorColor:
     serializedVersion: 2
-    rgba: 4278190323
+    rgba: 4284374737
   _DetailPrefixColour:
     serializedVersion: 2
-    rgba: 4291611852
-  _InputColour:
-    serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4287993237
   _TargetColour:
     serializedVersion: 2
     rgba: 4291143806
-  _BaseColor:
+  _SuccessColour:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4285843572

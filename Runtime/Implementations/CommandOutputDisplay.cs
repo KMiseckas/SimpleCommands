@@ -25,6 +25,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using System.IO;
+using System.Collections.Generic;
+using System;
 
 /// <summary>
 /// Base implementation for a default output display. Does not have to be used but contains majority 
@@ -46,6 +48,45 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     [SerializeField]
     private Text _TextField;
 
+    [SerializeField]
+    private bool _TimePrefix = true;
+
+    [SerializeField]
+    private bool _DatePrefix = false;
+
+    [SerializeField]
+    private bool _LineNumberPrefix = true;
+
+    /// <summary>
+    /// Saved log history.
+    /// </summary>
+    private string _Log;
+
+    /// <summary>
+    /// Number of log entries made.
+    /// </summary>
+    private int _LineCount = 0;
+
+    /// <summary>
+    /// Map of colours markup to their output types where the color markup is a hex value in a color tag as `<color=#fffff>`.
+    /// </summary>
+    private Dictionary<OutputType, string> _StringColorHexMarkup = new Dictionary<OutputType, string>();
+
+    [SerializeField]
+    private ConsoleTextColours _ConsoleColours;
+
+    protected virtual void Awake()
+    {
+        string tag = "<color=#";
+
+        _StringColorHexMarkup.Add(OutputType.NONE, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
+        _StringColorHexMarkup.Add(OutputType.INFO, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
+        _StringColorHexMarkup.Add(OutputType.WARNING, tag + _ConsoleColours.WarningColorHex + ">");
+        _StringColorHexMarkup.Add(OutputType.ERROR, tag + _ConsoleColours.ErrorColorHex + ">");
+        _StringColorHexMarkup.Add(OutputType.SUCCESS, tag + _ConsoleColours.SuccessColourHex + ">");
+        _StringColorHexMarkup.Add(OutputType.FROM_INPUT, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
+    }
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -57,12 +98,42 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public override void Output(string outputMessage)
+    public override void Output(string outputMessage, OutputType outputType = OutputType.NONE)
     {
-        _TextField.text += "\n";
-        _TextField.text += outputMessage;
+        string endColorMarkup = "</color>";
+
+        if (!_StringColorHexMarkup.TryGetValue(outputType, out string outputTypeColorMarkup))
+        {
+            outputTypeColorMarkup = tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">";
+        }
+
+        string detailPrefix = GetDetailPrefix(outputType.Equals(OutputType.FROM_INPUT));
+
+        _Log += "\n" + detailPrefix + outputMessage;
+        _TextField.text += "\n" + $"<color=#{_ConsoleColours.DetailPrefixColourHex}>{detailPrefix}</color>" + outputTypeColorMarkup + outputMessage + endColorMarkup;
 
         AdjustView();
+
+        _LineCount++;
+    }
+
+    /// <summary>
+    /// Get the correct prefix to use for the ouput message.
+    /// </summary>
+    /// <param name="isOuputFromInput">Is the output the same as the input that has been received.</param>
+    /// <returns>String which is to be used as the prefix for the main output message.</returns>
+    protected virtual string GetDetailPrefix(bool isOuputFromInput)
+    {
+        string prefix = "";
+
+        if (_LineNumberPrefix)
+            prefix += $"[{_LineCount}]";
+        if (_DatePrefix)
+            prefix += $"[{DateTime.Now.ToString("yyyy-MM-dd")}]";
+        if (_TimePrefix)
+            prefix += $"[{DateTime.Now.ToString("HH:mm:ss")}]";
+
+        return prefix + ": ";
     }
 
     /// <summary>
@@ -88,15 +159,15 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     {
         string outputPath = GetPrintOutputPath();
 
-        if(!File.Exists(outputPath))
+        if (!File.Exists(outputPath))
         {
             try
             {
-                File.WriteAllText(outputPath, _TextField.text);
+                File.WriteAllText(outputPath, _Log);
             }
-            catch(System.Exception exception)
+            catch (System.Exception exception)
             {
-                Output("PRINT ERROR: " + exception.Message);
+                Output(exception.Message);
                 Debug.LogError(exception);
             }
         }

@@ -86,21 +86,21 @@ namespace SimpleCommands
         /// Try attempt to execute the commands intent onto the game using the parameters and information provided.
         /// </summary>
         /// <param name="paramVals">The values as received from the command input string.</param>
-        /// <param name="output">The string message output received from the execution proccess for the console output.</param>
+        /// <param name="failOutput">The string message output received from the execution proccess for the console output.</param>
         /// <param name="targetInfo">The target info to tell on what to execute the commands intent on.</param>
         /// <returns>True if execution succeeded.</returns>
-        internal bool TryExecute(ITargetParser targetParserMap, string[] paramVals, out string output, TargetInfo targetInfo = default)
+        internal bool TryExecute(ITargetParser targetParserMap, string[] paramVals, out string failOutput, TargetInfo targetInfo = default)
         {
             Assert.IsNotNull(paramVals);
 
-            output = "";
+            failOutput = "";
 
             object[] parsedParams = null;
 
             //If parameters do exist, try parse their string types into objects.
             if(ParamInfo.Length > 0)
             {
-                if(!TryParseParams(paramVals, out parsedParams, out output))
+                if(!TryParseParams(paramVals, out parsedParams, out failOutput))
                 {
                     return false;
                 }
@@ -129,13 +129,13 @@ namespace SimpleCommands
                 }
                 else
                 {
-                    output = $"Execution for command `{CommandKey}` has failed. No instance found when searching for `[{targetInfo.IDType}{(targetInfo.ID != null ? "=" + targetInfo.ID : "")}]`in the scene.";
+                    failOutput = $"Execution for command `{CommandKey}` has failed. No instance found when searching for `[{targetInfo.IDType}{(targetInfo.ID != null ? "=" + targetInfo.ID : "")}]`in the scene.";
                     return false;
                 }
             }
             catch(Exception exception)
             {
-                output = $"Execution for command `{CommandKey}` has failed: {exception.Message}";
+                failOutput = $"Execution for command `{CommandKey}` has failed: {exception.Message}";
                 return false;
             }
 
@@ -167,7 +167,7 @@ namespace SimpleCommands
             }
             catch (Exception e)
             {
-                SCBase.OutConsole(e.Message);
+                SCBase.OutConsole(e.Message, OutputType.ERROR);
                 return false;
             }
 
