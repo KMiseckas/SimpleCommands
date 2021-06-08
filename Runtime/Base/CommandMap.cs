@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace SimpleCommands
@@ -100,7 +101,7 @@ namespace SimpleCommands
                 SCCommandAttribute attribute = commandMethod.GetCustomAttribute<SCCommandAttribute>();
 
                 int methodParamCount = methodParams.Length;
-                string commandKey = attribute.CommandKey;
+                string commandKey = attribute.UseMethodName ? commandMethod.Name : attribute.CommandKey;
                 string commandDesc = attribute.CommandDescription;
 
                 ParamInfo[] cmdParamInfo = new ParamInfo[methodParamCount];
@@ -121,7 +122,7 @@ namespace SimpleCommands
                 }
 
                 //Fail early incase duplicate commands have been defined.
-                Assert.IsFalse(_CommandMap.TryGetValue(commandKey, out SCCommand command));
+                Assert.IsFalse(_CommandMap.TryGetValue(commandKey, out SCCommand command), $"Command Key [{commandKey}] already exists. Please make sure there are not commands with the same name.");
 
                 SCCommand newCommand = new SCCommand(commandKey, commandDesc, methodClassType,cmdParamInfo, commandMethod);
 
@@ -153,12 +154,20 @@ namespace SimpleCommands
                     //For every method found, check if the method has a command attribute defined for it.
                     for(int k = 0; k < methods.Length; k++)
                     {
-                        object[] attributes = methods[k].GetCustomAttributes(typeof(SCCommandAttribute), false);
-
-                        //If attribute exists, add it to the list of method info that contain an attribute.
-                        if(attributes.Length > 0)
+                        try
                         {
-                            commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
+                            SCCommandAttribute attribute = methods[k].GetCustomAttribute<SCCommandAttribute>(); /*  <(typeof(SCCommandAttribute), false);*/
+
+                            //If attribute exists, add it to the list of method info that contain an attribute.
+                            if (attribute != null)
+                            {
+                                commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
+                            }
+                        }
+                        catch
+                        {
+                            Debug.LogError("dd");
+
                         }
                     }
                 }

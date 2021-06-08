@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using UnityEngine;
 
 namespace SimpleCommands.Attributes
 {
@@ -41,12 +42,37 @@ namespace SimpleCommands.Attributes
         public readonly string CommandDescription;
 
         /// <summary>
+        /// Should the command name be the same as the method name the attribute is attached to.
+        /// </summary>
+        public readonly bool UseMethodName = false;
+
+        /// <summary>
         /// Create a new instance of the <see cref="SCCommandAttribute"/>.
         /// </summary>
         /// <param name="commandKey">The unique key which will execute the command.</param>
         /// <param name="commandDescription">The description of the command intent.</param>
-        public SCCommandAttribute(string commandKey, string commandDescription = "")
+        public SCCommandAttribute(string commandKey = null, string commandDescription = null)
         {
+            if (string.IsNullOrWhiteSpace(commandDescription))
+            {
+                commandDescription = "";
+            }
+
+            if (string.IsNullOrWhiteSpace(commandKey))
+            {
+                commandKey = "";
+                UseMethodName = true;
+            }
+            else
+            {
+                commandKey.Trim();
+
+                if (commandKey.Contains(" "))
+                {
+                    Debug.LogError($"Cannot create a command with a commandKey that contains a space: `{commandKey}`");
+                }
+            }
+
             CommandKey = commandKey.ToLower();
             CommandDescription = commandDescription;
         }
