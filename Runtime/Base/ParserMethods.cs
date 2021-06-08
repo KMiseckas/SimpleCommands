@@ -48,12 +48,30 @@ public static class ParserMethods
     }
 
     /// <summary>
-    /// Parse string where the string represents the runtime ID of the gameobject to find and return.
+    /// Parse string where the string represents the runtime ID or name of the gameobject to find and return.
     /// </summary>
-    public static GameObject ParseGORuntimeID(string s)
+    public static GameObject ParseGameObject(string s)
+    {
+        string[] data = s.Split(':');
+
+        if(data[0] == "id")
+        {
+            return ParseGORunTimeID(data[1]);
+        }
+        else if(data[0] == "n:")
+        {
+            return ParseGOByName(data[1]);
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Parse string where the string represents the runtime ID of a GameObject to find and return.
+    /// </summary>
+    private static GameObject ParseGORunTimeID(string s)
     {
         int intID = int.Parse(s);
-        object targetObject = null;
 
         GameObject[] gameObjectsByID = GameObject.FindObjectsOfType<GameObject>();
 
@@ -71,7 +89,7 @@ public static class ParserMethods
     /// <summary>
     /// Parse string where the string represents the name of a GameObject to find and return.
     /// </summary>
-    public static GameObject ParseGOByName(string s)
+    private static GameObject ParseGOByName(string s)
     {
         return GameObject.Find(s);
     }
