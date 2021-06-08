@@ -139,19 +139,17 @@ namespace SimpleCommands.Implementations
                 return null;
             }
 
-            object targetObject = null;
-
             GameObject[] gameObjectsByID = GameObject.FindObjectsOfType<GameObject>();
 
             for (int i = 0; i < gameObjectsByID.Length; i++)
             {
                 if (gameObjectsByID[i].GetInstanceID() == intID)
                 {
-                    targetObject = gameObjectsByID[i];
+                    return new object[] { gameObjectsByID[i] };
                 }
             }
 
-            return targetObject == null ? null : new object[]{targetObject };
+            return null;
         }
 
         /// <summary>
