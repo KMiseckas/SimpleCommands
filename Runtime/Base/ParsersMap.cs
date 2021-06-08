@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace SimpleCommands
@@ -71,6 +72,12 @@ namespace SimpleCommands
             AddParserFunc(typeof(bool), (x) => { return bool.Parse(x); });
             AddParserFunc(typeof(string), (x) => { return x; });
             AddParserFunc(typeof(char), (x) => { return char.Parse(x); });
+            AddParserFunc(typeof(GameObject), (x) => { return ParserMethods.ParseGOByName(x); });
+            AddParserFunc(typeof(GameObject), (x) => { return ParserMethods.ParseGORuntimeID(x); });
+            AddParserFunc(typeof(Vector2), (x) => { return ParserMethods.ParseVector2(x); });
+            AddParserFunc(typeof(Vector3), (x) => { return ParserMethods.ParseVector3(x); });
+            AddParserFunc(typeof(Vector4), (x) => { return ParserMethods.ParseVector4(x); });
+            AddParserFunc(typeof(Rect), (x) => { return ParserMethods.ParseRect(x); });
         }
 
         /// <summary>
