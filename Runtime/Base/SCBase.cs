@@ -60,10 +60,12 @@ namespace SimpleCommands
         [SerializeField]
         private bool _AutoFocusPostCommand = true;
 
+#if ENABLE_INPUT_SYSTEM
         /// <summary>
         /// Instance of <see cref="PlayerInput"/> component for input.
         /// </summary>
         protected PlayerInput _Input;
+#endif
 
         /// <summary>
         /// List containing the history of the most recent commands, capped at amount based on <see cref="_CommandHistoryCap"/>.
@@ -199,12 +201,47 @@ namespace SimpleCommands
             //Populate the suggester with the collection of all the command keys.
             _CommandSuggester.AddCollection(_CommandMap.GetAllCommandKeys());
 
+#if ENABLE_INPUT_SYSTEM
             _Input = GetComponent<PlayerInput>();
+#endif
 
             DontDestroyOnLoad(this);
 
-            HookInput();
+            HookActions();
+#if ENABLE_INPUT_SYSTEM
+            HookInputSystemActions();
+#endif
         }
+
+#if ENABLE_LEGACY_INPUT_MANAGER && !ENABLE_INPUT_SYSTEM
+        protected virtual void Update()
+        {
+            ActionLegacyInput();
+        }
+
+        /// <summary>
+        /// Check and action the legacy input if the InputSystem package is not being used.
+        /// </summary>
+        protected virtual void ActionLegacyInput()
+        {
+            if (Input.GetKeyUp(KeyCode.Tilde))
+            {
+                ToggleConsole(default);
+            }
+            else if(Input.GetKeyUp(KeyCode.Return))
+            {
+                IssueCommand();
+            }
+            else if(Input.GetKeyUp(KeyCode.UpArrow))
+            {
+                PreviousCommand(default);
+            }
+            else if(Input.GetKeyUp(KeyCode.DownArrow))
+            {
+                NextCommand(default);
+            }
+        }
+#endif
 
         /// <summary>
         /// Create and return a new instance of <see cref="ICommandMap"/> implementation from which commands <see cref="SCCommand"/>s will be retrieved.
@@ -238,17 +275,24 @@ namespace SimpleCommands
         }
 
         /// <summary>
-        /// Hook required input.
+        /// Hook required actions.
         /// </summary>
-        private void HookInput()
+        protected virtual void HookActions()
+        {
+            BaseCommandInputDisplay.InputChangedEvent += OnCommandInputTextChanged;
+            BaseCommandSuggestionDisplay.SelectedCommandSuggestionEvent += OnSuggestedCommandSelected;
+        }
+
+#if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// Hook required input to actions.
+        /// </summary>
+        protected virtual void HookInputSystemActions()
         {
             BindAction(ToggleConsole, "Toggle");
             BindAction(IssueCommand, "Issue");
             BindAction(PreviousCommand, "Previous");
             BindAction(NextCommand, "Next");
-
-            BaseCommandInputDisplay.InputChangedEvent += OnCommandInputTextChanged;
-            BaseCommandSuggestionDisplay.SelectedCommandSuggestionEvent += OnSuggestedCommandSelected;
         }
 
         /// <summary>
@@ -275,11 +319,12 @@ namespace SimpleCommands
 
             action.performed += callback;
         }
+#endif
 
         /// <summary>
         /// Toggle the console on/off.
         /// </summary>
-        private void ToggleConsole(InputAction.CallbackContext obj)
+        protected virtual void ToggleConsole(InputAction.CallbackContext obj)
         {
             _InputDisplay.SetVisible(!_InputDisplay.IsVisible);
             _OutputDisplay.SetVisible(!_OutputDisplay.IsVisible);
@@ -314,7 +359,7 @@ namespace SimpleCommands
         /// <summary>
         /// Issue a command with the current input field text as command input.
         /// </summary>
-        private void IssueCommand(InputAction.CallbackContext obj)
+        protected void IssueCommand(InputAction.CallbackContext obj)
         {
             CommandInputInfo commandInputInfo = null;
 
@@ -358,7 +403,7 @@ namespace SimpleCommands
         /// <summary>
         /// Set the input display field to show the previous command from the command history list.
         /// </summary>
-        private void PreviousCommand(InputAction.CallbackContext obj)
+        protected void PreviousCommand(InputAction.CallbackContext obj)
         {
             if(_CurrentlyDisplayedCommand == null)
                 return;
@@ -372,7 +417,7 @@ namespace SimpleCommands
         /// <summary>
         /// Set the input display field to show the next command from the command history list.
         /// </summary>
-        private void NextCommand(InputAction.CallbackContext obj)
+        protected void NextCommand(InputAction.CallbackContext obj)
         {
             if(_CurrentlyDisplayedCommand == null)
                 return;
