@@ -156,10 +156,10 @@ namespace SimpleCommands
                     {
                         try
                         {
-                            SCCommandAttribute attribute = methods[k].GetCustomAttribute<SCCommandAttribute>(); /*  <(typeof(SCCommandAttribute), false);*/
+                            SCCommandAttribute attribute = methods[k].GetCustomAttribute<SCCommandAttribute>();
 
                             //If attribute exists, add it to the list of method info that contain an attribute.
-                            if (attribute != null)
+                            if (attribute != null && attribute.Include)
                             {
                                 commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
                             }
