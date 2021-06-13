@@ -160,7 +160,7 @@ namespace SimpleCommands
         /// <summary>
         /// Get instance of <see cref="ITargetParser"/>.
         /// </summary>
-        public ITargetParser CommandTargetParsers => _CommandTargetParsers;
+        public ITargetParser CommandTargetParser => _CommandTargetParsers;
 
         /// <summary>
         /// Get or create an instance of this object depending on whether it already exists or not. Thread safe.
@@ -384,7 +384,7 @@ namespace SimpleCommands
             }
             else
             {
-                if(command.TryExecute(CommandTargetParsers, commandInputInfo.CommandParams, out string failOutput, commandInputInfo.TargetInfo))
+                if(command.TryExecute(CommandTargetParser, commandInputInfo.CommandParams, out string failOutput, commandInputInfo.TargetInfo))
                 {
                     OutConsole($"Executed command `{commandInputInfo.CommandKey}`.", OutputType.SUCCESS);
                 }

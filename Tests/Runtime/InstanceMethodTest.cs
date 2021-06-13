@@ -27,43 +27,45 @@ using UnityEngine;
 
 public class InstanceMethodTest : MonoBehaviour
 {
-    [SCCommand("InstanceTest1")]
+    [SCCommand]
     public void EmptyMethod()
     {
         Debug.LogWarning("COMMAND WORKS");
     }
 
-    [SCCommand("InstanceTest2")]
+    [SCCommand(commandDescription: "Return method")]
     public int ReturnMethod()
     {
         Debug.LogWarning("COMMAND WORKS");
         return 10;
     }
 
-    [SCCommand("InstanceTest3")]
+    [SCCommand(commandDescription: "Param method")]
     public void ParamMethod(int a)
     {
         Debug.LogWarning("COMMAND WORKS");
     }
 
-    [SCCommand("InstanceTest4")]
+    [SCCommand(commandDescription: "Overloaded method")]
     public void OverloadedMethod(int a)
     {
         Debug.LogWarning("COMMAND WORKS");
     }
 
-    [SCCommand("InstanceTest5")]
+    [SCCommand(commandKey:"OverloadedMethod_Two", commandDescription:"Overloaded method")]
     public void OverloadedMethod(int a, int b)
     {
         Debug.LogWarning("COMMAND WORKS");
     }
 
+    //[SCCommand(commandDescription: "Out method")]
     public void OutParamMethod(int a, out string b)
     {
         Debug.LogWarning("COMMAND WORKS");
         b = "Output String";
     }
 
+    [SCCommand(commandDescription: "Optional method")]
     public void OptionalParamMethod(int a, int b = 0, string c = "")
     {
         Debug.LogWarning("COMMAND WORKS");

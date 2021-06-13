@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using SimpleCommands;
 using SimpleCommands.Attributes;
 using System.Collections;
 using System.Collections.Generic;
@@ -48,26 +49,32 @@ public class StaticMethodTest : MonoBehaviour
 
     }
 
-    [SCCommand("test113")]
-    public static void OverloadedMethod(int a, int b)
+    [SCCommand(commandDescription: "Example method for one")]
+    public static void OneMethod(int a, int b)
     {
 
     }
 
-    [SCCommand("test13")]
-    public static void OutParamMethod(int a,string b)
+    [SCCommand(commandDescription:"Example method for onemore")]
+    public static void OneMoreMethod(int a,string b)
     {
         b = "Output String";
     }
 
-    [SCCommand("test12")]
-    public static void OptionalParamMethod(int a, int b)
+    [SCCommand(commandDescription: "Example method for one less")]
+    public static void OneLessMethod(int a, int b)
     {
 
     }
 
-    [SCCommand("test1")]
-    public static void Test1()
+    [SCCommand(commandDescription: "Example method for one less or equal")]
+    public static void OneLessOrEqualMethod(int a, int b)
+    {
+
+    }
+
+    [SCCommand(commandDescription: "Example method for one random")]
+    public static void OneRandomMethod()
     {
         Debug.LogWarning("TEST WORKS");
     }
