@@ -129,7 +129,8 @@ namespace SimpleCommands
                 }
                 else
                 {
-                    failOutput = $"Execution for command `{CommandKey}` has failed. No instance found when searching for `[{targetInfo.IDType}{(targetInfo.ID != null ? "=" + targetInfo.ID : "")}]`in the scene.";
+                    string targetString = string.IsNullOrWhiteSpace(targetInfo.IDType) ? "any instance" : $"[{targetInfo.IDType}={(targetInfo.ID != null ? targetInfo.ID : "")}]";
+                    failOutput = $"Execution for command `{CommandKey}` has failed. No instance found when searching for `{targetString}`in the scene.";
                     return false;
                 }
             }
