@@ -164,7 +164,7 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     /// <summary>
     /// Functionality that allows the console output to be printed to a text file within the project package.
     /// </summary>
-    [SCCommand("scc_print", "Writes the console outputs into a .txt file.")]
+    [SCCommand("sc_print", "Writes the console outputs into a .txt file.")]
     public void PrintToTextFile()
     {
         string outputPath = GetPrintOutputPath();
