@@ -92,7 +92,6 @@ public class CommandSuggestionDisplay : BaseCommandSuggestionDisplay
 
             commandKeyBox.text = commandCol + command.CommandKey + endCol;
 
-
             if (!command.Method.IsStatic)
             {
                 commandKeyBox.text += $" {targetCol}[target]{endCol}";

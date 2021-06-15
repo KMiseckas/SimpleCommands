@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _CommandColor:
     serializedVersion: 2
-    rgba: 4285843572
+    rgba: 4285383533
   _TypeColor:
     serializedVersion: 2
     rgba: 4286178535
@@ -36,3 +36,9 @@ MonoBehaviour:
   _SuccessColour:
     serializedVersion: 2
     rgba: 4285843572
+  _InfoColourHex:
+    serializedVersion: 2
+    rgba: 4294967295
+  _InputColourHex:
+    serializedVersion: 2
+    rgba: 4294967295

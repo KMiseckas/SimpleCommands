@@ -83,11 +83,11 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
         string tag = "<color=#";
 
         _StringColorHexMarkup.Add(OutputType.NONE, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
-        _StringColorHexMarkup.Add(OutputType.INFO, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
+        _StringColorHexMarkup.Add(OutputType.INFO, tag + _ConsoleColours.InfoColourHex + ">");
         _StringColorHexMarkup.Add(OutputType.WARNING, tag + _ConsoleColours.WarningColorHex + ">");
         _StringColorHexMarkup.Add(OutputType.ERROR, tag + _ConsoleColours.ErrorColorHex + ">");
         _StringColorHexMarkup.Add(OutputType.SUCCESS, tag + _ConsoleColours.SuccessColourHex + ">");
-        _StringColorHexMarkup.Add(OutputType.FROM_INPUT, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
+        _StringColorHexMarkup.Add(OutputType.FROM_INPUT, tag + _ConsoleColours.InputColourHex + ">");
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
     /// <summary>
     /// Functionality that allows the console output to be printed to a text file within the project package.
     /// </summary>
-    [SCCommand("scc_print", "Writes the console outputs into a .txt file.")]
+    [SCCommand("sc_print", "Writes the console outputs into a .txt file.")]
     public void PrintToTextFile()
     {
         string outputPath = GetPrintOutputPath();
