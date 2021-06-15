@@ -20,25 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace SimpleCommands.Runtime.Base
 {
-    /// <summary>
-    /// Interface to be implemented by a class that provides possible words from the provided prefix from a collection of applicable words.
-    /// </summary>
-    public interface ITextSuggester
+    public abstract class BaseCommandSuggestionDisplay : Display
     {
-        /// <summary>
-        /// Add a collection of text/words from which the suggestions will be picked from. These should be all the words that can be auto completed by the implementation 
-        /// of this interface.
-        /// </summary>
-        /// <param name="words">Array of words that can be suggested for auto-completion.</param>
-        void AddCollection(string[] words);
+        public delegate void OnSelectedCommandSuggestionDelegate(SCCommand command);
+        public static OnSelectedCommandSuggestionDelegate SelectedCommandSuggestionEvent;
 
         /// <summary>
-        /// Get the suggestions for auto completion based on the prefix provided.
+        /// List of all the suggested commands that can be picked from for displaying.
         /// </summary>
-        /// <param name="prefix">The prefix of a word for which to search suggestions for.</param>
-        /// <returns>An array limited of words/text that have the same prefix.</returns>
-        string[] GetSuggestions(string prefix);
+        protected List<SCCommand> _SuggestedCommandList = new List<SCCommand>();
+
+        /// <summary>
+        /// Display the suggested commands.
+        /// </summary>
+        /// <param name="outputMessage">Suggestions as instances of command objects.</param>
+        public virtual void SetSuggestedCommands(List<SCCommand> suggestedCommands)
+        {
+            _SuggestedCommandList.Clear();
+            _SuggestedCommandList.AddRange(suggestedCommands);
+        }
+
+        /// <summary>
+        /// Trigger the public selected command suggestion event: <see cref="SelectedCommandSuggestionEvent"/>.
+        /// </summary>
+        /// <param name="val">The selected command from available suggestions.</param>
+        protected virtual void TriggerSelectedCommandSuggestion(SCCommand command)
+        {
+            if (SelectedCommandSuggestionEvent != null)
+                SelectedCommandSuggestionEvent(command);
+        }
     }
 }

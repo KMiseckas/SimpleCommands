@@ -20,9 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-using System.Collections.Generic;
-
-namespace SimpleCommands
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// Interface to be implemented for a class that can return an instance of <see cref="SCCommand"/> that matches a unique key (ID).

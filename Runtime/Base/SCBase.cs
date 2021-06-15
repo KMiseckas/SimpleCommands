@@ -21,12 +21,8 @@
 // SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using SimpleCommands.Base;
-using SimpleCommands.Base.Interfaces;
-using SimpleCommands.Implementations;
+using SimpleCommands.Runtime.Base;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -169,9 +165,9 @@ namespace SimpleCommands
         {
             get
             {
-                lock(_Lock)
+                lock (_Lock)
                 {
-                    if(_Instance == null)
+                    if (_Instance == null)
                     {
                         _Instance = FindObjectOfType<SCBase>();
                     }
@@ -183,7 +179,7 @@ namespace SimpleCommands
 
         protected virtual void Awake()
         {
-            if(_Instance != null)
+            if (_Instance != null)
             {
                 Destroy(this.gameObject);
                 return;
@@ -330,7 +326,7 @@ namespace SimpleCommands
             _OutputDisplay.SetVisible(!_OutputDisplay.IsVisible);
             _SuggestionDisplay.SetVisible(!_SuggestionDisplay.IsVisible);
 
-            if(_InputDisplay.IsVisible)
+            if (_InputDisplay.IsVisible)
                 _InputDisplay.Focus();
         }
 
@@ -365,7 +361,7 @@ namespace SimpleCommands
 
             string inputString = _InputDisplay.GetInputString();
 
-            if(!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
+            if (!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
                 return;
 
             OutConsole(inputString, OutputType.FROM_INPUT);
@@ -373,18 +369,18 @@ namespace SimpleCommands
             _CommandHistory.AddFirst(inputString);
             _CurrentlyDisplayedCommand = _CommandHistory.First;
 
-            if(_CommandHistory.Count > _CommandHistoryCap)
+            if (_CommandHistory.Count > _CommandHistoryCap)
             {
                 _CommandHistory.RemoveLast();
             }
 
-            if(!_CommandMap.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
+            if (!_CommandMap.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
                 OutConsole($"Command `{commandInputInfo.CommandKey}` not found.");
             }
             else
             {
-                if(command.TryExecute(CommandTargetParser, commandInputInfo.CommandParams, out string failOutput, commandInputInfo.TargetInfo))
+                if (command.TryExecute(CommandTargetParser, commandInputInfo.CommandParams, out string failOutput, commandInputInfo.TargetInfo))
                 {
                     OutConsole($"Executed command `{commandInputInfo.CommandKey}`.", OutputType.SUCCESS);
                 }
@@ -396,7 +392,7 @@ namespace SimpleCommands
 
             _InputDisplay.OverrideInputString("");
 
-            if(_AutoFocusPostCommand)
+            if (_AutoFocusPostCommand)
                 _InputDisplay.Focus();
         }
 
@@ -405,7 +401,7 @@ namespace SimpleCommands
         /// </summary>
         protected void PreviousCommand(InputAction.CallbackContext obj)
         {
-            if(_CurrentlyDisplayedCommand == null)
+            if (_CurrentlyDisplayedCommand == null)
                 return;
 
             _InputDisplay.OverrideInputString(_CurrentlyDisplayedCommand.Value);
@@ -419,12 +415,12 @@ namespace SimpleCommands
         /// </summary>
         protected void NextCommand(InputAction.CallbackContext obj)
         {
-            if(_CurrentlyDisplayedCommand == null)
+            if (_CurrentlyDisplayedCommand == null)
                 return;
 
             string commandString = "";
 
-            if(_CurrentlyDisplayedCommand.Previous != null)
+            if (_CurrentlyDisplayedCommand.Previous != null)
             {
                 _CurrentlyDisplayedCommand = _CurrentlyDisplayedCommand.Previous;
                 commandString = _CurrentlyDisplayedCommand.Value;
@@ -448,7 +444,7 @@ namespace SimpleCommands
         /// <param name="input">Text it has change to.</param>
         protected virtual void OnCommandInputTextChanged(string input)
         {
-            string[] inputSplit = input.Split(new char[] {' '});
+            string[] inputSplit = input.Split(new char[] { ' ' });
 
             if (inputSplit.Length > 1) return;
 
@@ -458,7 +454,7 @@ namespace SimpleCommands
 
             for (int i = 0; i < stringCommandSuggestions.Length; i++)
             {
-                if(_CommandMap.TryGetCommand(stringCommandSuggestions[i], out SCCommand command))
+                if (_CommandMap.TryGetCommand(stringCommandSuggestions[i], out SCCommand command))
                 {
                     _CurrentCommandSuggestions.Add(command);
                 }
