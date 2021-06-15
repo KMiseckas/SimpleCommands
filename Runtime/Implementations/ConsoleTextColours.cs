@@ -4,7 +4,7 @@
 public class ConsoleTextColours : ScriptableObject
 {
     [SerializeField]
-    private Color32 _CommandColor, _TypeColor, _DescriptionColor, _WarningColor, _ErrorColor, _DetailPrefixColour, _TargetColour, _SuccessColour;
+    private Color32 _CommandColor, _TypeColor, _DescriptionColor, _WarningColor, _ErrorColor, _DetailPrefixColour, _TargetColour, _SuccessColour, _InfoColourHex, _InputColourHex;
 
     public string CommandColorHex => ColorUtility.ToHtmlStringRGBA(_CommandColor);
     public string TypeColorHex => ColorUtility.ToHtmlStringRGBA(_TypeColor);
@@ -14,4 +14,6 @@ public class ConsoleTextColours : ScriptableObject
     public string DetailPrefixColourHex => ColorUtility.ToHtmlStringRGBA(_DetailPrefixColour);
     public string TargetColourHex => ColorUtility.ToHtmlStringRGBA(_TargetColour);
     public string SuccessColourHex => ColorUtility.ToHtmlStringRGBA(_SuccessColour);
+    public string InfoColourHex => ColorUtility.ToHtmlStringRGBA(_InfoColourHex);
+    public string InputColourHex => ColorUtility.ToHtmlStringRGBA(_InputColourHex);
 }

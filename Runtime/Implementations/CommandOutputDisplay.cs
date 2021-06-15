@@ -83,11 +83,11 @@ public class CommandOutputDisplay : BaseCommandOutputDisplay
         string tag = "<color=#";
 
         _StringColorHexMarkup.Add(OutputType.NONE, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
-        _StringColorHexMarkup.Add(OutputType.INFO, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
+        _StringColorHexMarkup.Add(OutputType.INFO, tag + _ConsoleColours.InfoColourHex + ">");
         _StringColorHexMarkup.Add(OutputType.WARNING, tag + _ConsoleColours.WarningColorHex + ">");
         _StringColorHexMarkup.Add(OutputType.ERROR, tag + _ConsoleColours.ErrorColorHex + ">");
         _StringColorHexMarkup.Add(OutputType.SUCCESS, tag + _ConsoleColours.SuccessColourHex + ">");
-        _StringColorHexMarkup.Add(OutputType.FROM_INPUT, tag + ColorUtility.ToHtmlStringRGBA(_TextField.color) + ">");
+        _StringColorHexMarkup.Add(OutputType.FROM_INPUT, tag + _ConsoleColours.InputColourHex + ">");
     }
 
     /// <summary>

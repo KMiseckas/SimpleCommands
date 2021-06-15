@@ -149,7 +149,7 @@ namespace SimpleCommands
                 //For every class type found, get every method.
                 for(int j = 0; j < types.Length; j++)
                 {
-                    MethodInfo[] methods = types[j].GetMethods();
+                    MethodInfo[] methods = types[j].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
                     //For every method found, check if the method has a command attribute defined for it.
                     for(int k = 0; k < methods.Length; k++)
