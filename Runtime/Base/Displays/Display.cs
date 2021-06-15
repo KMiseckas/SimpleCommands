@@ -20,18 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using UnityEngine;
+
 namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
-    /// The build target for which the command should be available to use within.<br></br><br></br>
-    /// <b>DEVELOPMENT_ONLY</b> - Command should only be usable for development builds.<br></br>
-    /// <b>PRODUCTION_ONLY</b> - Command should only be usable for production/delivery builds.<br></br>
-    /// <b>PRODUCTION_AND_DEVELOPMENT</b> - Command should be usable both within development and production builds.
+    /// Base class for the display implementation.
     /// </summary>
-    public enum BuildTarget
+    public abstract class Display : MonoBehaviour
     {
-        DEVELOPMENT_ONLY,
-        PRODUCTION_ONLY,
-        PRODUCTION_AND_DEVELOPMENT
+        /// <summary>
+        /// Is the display visible on screen.
+        /// </summary>
+        private bool _IsVisible = false;
+
+        /// <summary>
+        /// Get whether the display is visible on the screen.
+        /// </summary>
+        public bool IsVisible => _IsVisible;
+
+        /// <summary>
+        /// Toggle the display visibility.
+        /// </summary>
+        public void SetVisible(bool isVisible)
+        {
+            _IsVisible = isVisible;
+
+            OnVisibilityChanged(IsVisible);
+        }
+
+        /// <summary>
+        /// Invoke on visibilty property change.
+        /// </summary>
+        /// <param name="isVisible">True if visibility has change to visible.</param>
+        protected abstract void OnVisibilityChanged(bool isVisible);
     }
 }

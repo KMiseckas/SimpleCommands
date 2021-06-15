@@ -20,18 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-namespace SimpleCommands.Runtime.Base
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace SimpleCommands.Runtime.Implementations
 {
-    /// <summary>
-    /// The build target for which the command should be available to use within.<br></br><br></br>
-    /// <b>DEVELOPMENT_ONLY</b> - Command should only be usable for development builds.<br></br>
-    /// <b>PRODUCTION_ONLY</b> - Command should only be usable for production/delivery builds.<br></br>
-    /// <b>PRODUCTION_AND_DEVELOPMENT</b> - Command should be usable both within development and production builds.
-    /// </summary>
-    public enum BuildTarget
+   public class SuggestionButton : MonoBehaviour
     {
-        DEVELOPMENT_ONLY,
-        PRODUCTION_ONLY,
-        PRODUCTION_AND_DEVELOPMENT
+        [SerializeField]
+        private Text _CommandKeyText;
+
+        [SerializeField]
+        private Text _CommandDescText;
+
+        public Text CommandKeyText => _CommandKeyText;
+
+        public Text CommandDescText => _CommandDescText;
     }
 }

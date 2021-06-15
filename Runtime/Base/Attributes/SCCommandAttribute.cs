@@ -23,7 +23,7 @@
 using System;
 using UnityEngine;
 
-namespace SimpleCommands.Attributes
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// Attribute that defines any method as a command that is compatible with this `SimpleCommands` project.
@@ -76,9 +76,7 @@ namespace SimpleCommands.Attributes
 #endif
 
             if (string.IsNullOrWhiteSpace(commandDescription))
-            {
                 commandDescription = "";
-            }
 
             if (string.IsNullOrWhiteSpace(commandKey))
             {
@@ -90,9 +88,7 @@ namespace SimpleCommands.Attributes
                 commandKey.Trim();
 
                 if (commandKey.Contains(" "))
-                {
                     Debug.LogError($"Cannot create a command with a commandKey that contains a space: `{commandKey}`");
-                }
             }
 
             CommandKey = commandKey.ToLower();

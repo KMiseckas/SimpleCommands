@@ -20,12 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Assertions;
-
-namespace SimpleCommands
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// Interface to be implemented by a class which can parse a command input string into an instance of <see cref="CommandInputInfo"/>.

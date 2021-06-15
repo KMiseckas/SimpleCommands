@@ -23,22 +23,38 @@
 namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
-    /// Interface to be implemented by a class that provides possible words from the provided prefix from a collection of applicable words.
+    /// The abstract input display that is used for input text rendering.
     /// </summary>
-    public interface ITextSuggester
+    public abstract class BaseCommandInputDisplay : Display
     {
-        /// <summary>
-        /// Add a collection of text/words from which the suggestions will be picked from. These should be all the words that can be auto completed by the implementation 
-        /// of this interface.
-        /// </summary>
-        /// <param name="words">Array of words that can be suggested for auto-completion.</param>
-        void AddCollection(string[] words);
+        public delegate void OnInputChangedDelegate(string val);
+        public static OnInputChangedDelegate InputChangedEvent;
 
         /// <summary>
-        /// Get the suggestions for auto completion based on the prefix provided.
+        /// Get the currently visible string in the input field text display.
         /// </summary>
-        /// <param name="prefix">The prefix of a word for which to search suggestions for.</param>
-        /// <returns>An array limited of words/text that have the same prefix.</returns>
-        string[] GetSuggestions(string prefix);
+        /// <returns>String in the input field.</returns>
+        protected internal abstract string GetInputString();
+
+        /// <summary>
+        /// Force the override of the visible string in the input field text display to the provided string.
+        /// </summary>
+        /// <param name="inputOverride">String to force show in the input field.</param>
+        protected internal abstract void OverrideInputString(string inputOverride);
+
+        /// <summary>
+        /// Focus the input field to allow input.
+        /// </summary>
+        protected internal abstract void Focus();
+
+        /// <summary>
+        /// Trigger the public text changed event: <see cref="InputChangedEvent"/>.
+        /// </summary>
+        /// <param name="val">Value to which the text changed to.</param>
+        protected void TriggerTextChanged(string val)
+        {
+            if (InputChangedEvent != null)
+                InputChangedEvent(val);
+        }
     }
 }
