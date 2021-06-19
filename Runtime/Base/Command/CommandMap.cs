@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -97,7 +98,7 @@ namespace SimpleCommands.Runtime.Base
                 var commandMethod = commandMethodInfo[i].Method;
                 var methodClassType = commandMethodInfo[i].ClassType;
                 var methodParams = commandMethod.GetParameters();
-                var attribute = commandMethod.GetCustomAttribute<SCCommandAttribute>();
+                var attribute = commandMethodInfo[i].Attribute;
 
                 var methodParamCount = methodParams.Length;
                 var commandKey = attribute.UseMethodName ? commandMethod.Name.ToLower() : attribute.CommandKey;
@@ -106,6 +107,7 @@ namespace SimpleCommands.Runtime.Base
                 var cmdParamInfo = new ParamInfo[methodParamCount];
 
                 if (methodParams.Length > 0)
+                {
                     for (var j = 0; j < methodParams.Length; j++)
                     {
                         var paramInfo = methodParams[j];
@@ -117,6 +119,7 @@ namespace SimpleCommands.Runtime.Base
 
                         cmdParamInfo[j] = new ParamInfo(paramType, parserFunc, paramInfo.IsOptional);
                     }
+                }
 
                 //Fail early incase duplicate commands have been defined.
                 Assert.IsFalse(_CommandMap.TryGetValue(commandKey, out var command), $"Command Key [{commandKey}] already exists. Please make sure there are not commands with the same name.");
@@ -134,35 +137,61 @@ namespace SimpleCommands.Runtime.Base
         private CommandMethodInfo[] FindCommandMethodInfo()
         {
             //Get all the assemblies to scan.
-            var targetAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Assembly[] targetAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             var commandMethods = new List<CommandMethodInfo>();
 
-            //For every assembly, get every possible class type.
-            for (var i = 0; i < targetAssemblies.Length; i++)
+            CompareInfo comparer = new CultureInfo("en-US").CompareInfo;
+
+            List<string> assembliesToIgnore = new List<string>();
+            PopulateAssembliesToIgnoreByPrefix(assembliesToIgnore);
+
+            //For every assembly that is not ignored, get every possible class type.
+            for (int i = 0; i < targetAssemblies.Length; i++)
             {
-                var types = targetAssemblies[i].GetTypes();
+                Assembly assembly = targetAssemblies[i];
+
+                string assemblyName = assembly.GetName().Name;
+                bool isIgnoredAssembly = false;
+
+                foreach (string name in assembliesToIgnore)
+                {
+                    if (comparer.IsPrefix(assemblyName, name))
+                    {
+                        isIgnoredAssembly = true;
+                        break;
+                    }
+                }
+
+                if (isIgnoredAssembly) continue;
+
+                Type[] types = assembly.GetTypes();
 
                 //For every class type found, get every method.
-                for (var j = 0; j < types.Length; j++)
+                for (int j = 0; j < types.Length; j++)
                 {
-                    var methods = types[j].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+                    try
+                    {
+                        MethodInfo[] methods = types[j].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
-                    //For every method found, check if the method has a command attribute defined for it.
-                    for (var k = 0; k < methods.Length; k++)
-                        try
+                        //For every method found, check if the method has a command attribute defined for it.
+                        for (int k = 0; k < methods.Length; k++)
                         {
-                            var attribute = methods[k].GetCustomAttribute<SCCommandAttribute>();
+                            IEnumerable<SCCommandAttribute> attributes = methods[k].GetCustomAttributes<SCCommandAttribute>();
 
-                            //If attribute exists, add it to the list of method info that contain an attribute.
-                            if (attribute != null && attribute.Include)
-                                commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
+                            foreach (SCCommandAttribute attribute in attributes)
+                            {
+                                if (attribute != null && attribute.Include)
+                                {
+                                    commandMethods.Add(new CommandMethodInfo(methods[k], types[j], attribute));
+                                }
+                            }
                         }
-                        catch
-                        {
-                            Debug.LogError("dd");
-
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning(e);
+                    }
                 }
             }
 
@@ -184,16 +213,45 @@ namespace SimpleCommands.Runtime.Base
             /// </summary>
             internal readonly Type ClassType;
 
+            internal readonly SCCommandAttribute Attribute;
+
             /// <summary>
             /// Create a new instance of <see cref="CommandMethodInfo"/>.
             /// </summary>
             /// <param name="method">Method info.</param>
             /// <param name="classType">Type of class method is located in.</param>
-            internal CommandMethodInfo(MethodInfo method, Type classType)
+            internal CommandMethodInfo(MethodInfo method, Type classType, SCCommandAttribute attribute)
             {
                 Method = method;
                 ClassType = classType;
+                Attribute = attribute;
             }
+        }
+
+        /// <summary>
+        /// Populate a list<string> with prefixes of assemblies names that should not be included as part of the scanning for `SCCommand` attribute.
+        /// </summary>
+        /// <param name="assembliesToIgnore">List of assemblies to ignore by prefix.</param>
+        protected virtual void PopulateAssembliesToIgnoreByPrefix(List<string> assembliesToIgnore)
+        {
+
+            assembliesToIgnore.Add("Unity");
+            assembliesToIgnore.Add("System");
+            assembliesToIgnore.Add("Mono.");
+            assembliesToIgnore.Add("mscorlib");
+            assembliesToIgnore.Add("netstandard");
+            assembliesToIgnore.Add("TextMeshPro");
+            assembliesToIgnore.Add("Microsoft.GeneratedCode");
+            assembliesToIgnore.Add("I18N");
+            assembliesToIgnore.Add("Boo.");
+            assembliesToIgnore.Add("UnityScript.");
+            assembliesToIgnore.Add("ICSharpCode.");
+            assembliesToIgnore.Add("ExCSS.Unity");
+            assembliesToIgnore.Add("Assembly-CSharp-Editor");
+            assembliesToIgnore.Add("Assembly-UnityScript-Editor");
+            assembliesToIgnore.Add("nunit.");
+            assembliesToIgnore.Add("SyntaxTree.");
+            assembliesToIgnore.Add("AssetStoreTools");
         }
     }
 }

@@ -28,6 +28,8 @@ namespace SimpleCommands.Runtime.Base
     internal static class DefaultCommands
     {
         [SCCommand(commandKey: "SC_Commands_List", commandDescription: "Show all the available commands on the specified page.")]
+        [SCCommand(commandKey: "List", commandDescription: "Show all the available commands on the specified page.")]
+        [SCCommand(commandKey: "Help", commandDescription: "Show all the available commands on the specified page.")]
         public static void ShowAvailableCommands(int page = 0)
         {
             int maxCommandsPerPage = 15;
@@ -35,7 +37,7 @@ namespace SimpleCommands.Runtime.Base
             string[] availableCommands = SCBase.Instance.CommandMap.GetAllCommandKeys();
 
             int commandCount = availableCommands.Length;
-            int pages = 1;
+            int pages = 0;
 
             if (commandCount > maxCommandsPerPage)
             {
@@ -51,7 +53,7 @@ namespace SimpleCommands.Runtime.Base
             int lastElement = nextPage == page ? commandCount : startingElement + maxCommandsPerPage;
 
             SCBase.OutConsole("");
-            SCBase.OutConsole("------------------------------------------------------------------------------------------", OutputType.INFO);
+            SCBase.OutConsole("------------------------------------------------------------------------------------------");
 
             for (int i = startingElement; i < lastElement; i++)
             {
@@ -84,9 +86,9 @@ namespace SimpleCommands.Runtime.Base
                 SCBase.OutConsole($" - {keyOutput}: {command.CommandDesc}");
             }
 
-            SCBase.OutConsole("------------------------------------------------------------------------------------------", OutputType.INFO);
-            SCBase.OutConsole($"Page: {page}/{pages}", OutputType.INFO);
-            SCBase.OutConsole("------------------------------------------------------------------------------------------", OutputType.INFO);
+            SCBase.OutConsole("------------------------------------------------------------------------------------------");
+            SCBase.OutConsole($"Page: {page+1}/{pages+1}");
+            SCBase.OutConsole("------------------------------------------------------------------------------------------");
             SCBase.OutConsole("");
         }
 
@@ -128,10 +130,10 @@ namespace SimpleCommands.Runtime.Base
                 }
 
                 SCBase.OutConsole("");
-                SCBase.OutConsole("--Command Info----------------------------------------------------------------------------", OutputType.INFO);
+                SCBase.OutConsole("--Command Info----------------------------------------------------------------------------");
                 SCBase.OutConsole($"Key: {keyOutput}", OutputType.INFO);
                 SCBase.OutConsole($"Desc: {command.CommandDesc}", OutputType.INFO);
-                SCBase.OutConsole("------------------------------------------------------------------------------------------", OutputType.INFO);
+                SCBase.OutConsole("------------------------------------------------------------------------------------------");
                 SCBase.OutConsole("");
             }
         }

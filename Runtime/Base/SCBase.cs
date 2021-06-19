@@ -376,7 +376,7 @@ namespace SimpleCommands
 
             if (!_CommandMap.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
-                OutConsole($"Command `{commandInputInfo.CommandKey}` not found.");
+                OutConsole($"Command `{commandInputInfo.CommandKey}` not found.", OutputType.WARNING);
             }
             else
             {

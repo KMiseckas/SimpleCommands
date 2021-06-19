@@ -105,6 +105,8 @@ namespace SimpleCommands.Runtime.Implementations
         /// </summary>
         public override void Output(string outputMessage, OutputType outputType = OutputType.NONE)
         {
+            base.Output(outputMessage, outputType);
+
             var endColorMarkup = "</color>";
 
             if (!_StringColorHexMarkup.TryGetValue(outputType, out var outputTypeColorMarkup))
@@ -168,6 +170,7 @@ namespace SimpleCommands.Runtime.Implementations
             var outputPath = GetPrintOutputPath();
 
             if (!File.Exists(outputPath))
+            {
                 try
                 {
                     File.WriteAllText(outputPath, _Log);
@@ -177,6 +180,7 @@ namespace SimpleCommands.Runtime.Implementations
                     Output(exception.Message);
                     Debug.LogError(exception);
                 }
+            }
         }
 
         /// <summary>
