@@ -146,11 +146,12 @@ namespace SimpleCommands.Runtime.Base
                 //For every class type found, get every method.
                 for (var j = 0; j < types.Length; j++)
                 {
-                    var methods = types[j].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+                    try
+                    {
+                        var methods = types[j].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
-                    //For every method found, check if the method has a command attribute defined for it.
-                    for (var k = 0; k < methods.Length; k++)
-                        try
+                        //For every method found, check if the method has a command attribute defined for it.
+                        for (var k = 0; k < methods.Length; k++)
                         {
                             var attribute = methods[k].GetCustomAttribute<SCCommandAttribute>();
 
@@ -158,11 +159,11 @@ namespace SimpleCommands.Runtime.Base
                             if (attribute != null && attribute.Include)
                                 commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
                         }
-                        catch
-                        {
-                            Debug.LogError("dd");
-
-                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.Log(e);
+                    }
                 }
             }
 

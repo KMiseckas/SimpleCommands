@@ -28,7 +28,7 @@ namespace SimpleCommands.Runtime.Base
     /// <summary>
     /// Attribute that defines any method as a command that is compatible with this `SimpleCommands` project.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
     public class SCCommandAttribute : Attribute
     {
         /// <summary>
