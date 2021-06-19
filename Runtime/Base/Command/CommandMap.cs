@@ -98,7 +98,7 @@ namespace SimpleCommands.Runtime.Base
                 var commandMethod = commandMethodInfo[i].Method;
                 var methodClassType = commandMethodInfo[i].ClassType;
                 var methodParams = commandMethod.GetParameters();
-                var attribute = commandMethod.GetCustomAttribute<SCCommandAttribute>();
+                var attribute = commandMethodInfo[i].Attribute;
 
                 var methodParamCount = methodParams.Length;
                 var commandKey = attribute.UseMethodName ? commandMethod.Name.ToLower() : attribute.CommandKey;
@@ -107,6 +107,7 @@ namespace SimpleCommands.Runtime.Base
                 var cmdParamInfo = new ParamInfo[methodParamCount];
 
                 if (methodParams.Length > 0)
+                {
                     for (var j = 0; j < methodParams.Length; j++)
                     {
                         var paramInfo = methodParams[j];
@@ -118,6 +119,7 @@ namespace SimpleCommands.Runtime.Base
 
                         cmdParamInfo[j] = new ParamInfo(paramType, parserFunc, paramInfo.IsOptional);
                     }
+                }
 
                 //Fail early incase duplicate commands have been defined.
                 Assert.IsFalse(_CommandMap.TryGetValue(commandKey, out var command), $"Command Key [{commandKey}] already exists. Please make sure there are not commands with the same name.");
@@ -175,14 +177,18 @@ namespace SimpleCommands.Runtime.Base
                         //For every method found, check if the method has a command attribute defined for it.
                         for (int k = 0; k < methods.Length; k++)
                         {
-                            SCCommandAttribute attribute = methods[k].GetCustomAttribute<SCCommandAttribute>();
+                            IEnumerable<SCCommandAttribute> attributes = methods[k].GetCustomAttributes<SCCommandAttribute>();
 
-                            //If attribute exists, add it to the list of method info that contain an attribute.
-                            if (attribute != null && attribute.Include)
-                                commandMethods.Add(new CommandMethodInfo(methods[k], types[j]));
+                            foreach (SCCommandAttribute attribute in attributes)
+                            {
+                                if (attribute != null && attribute.Include)
+                                {
+                                    commandMethods.Add(new CommandMethodInfo(methods[k], types[j], attribute));
+                                }
+                            }
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Debug.LogWarning(e);
                     }
@@ -207,15 +213,18 @@ namespace SimpleCommands.Runtime.Base
             /// </summary>
             internal readonly Type ClassType;
 
+            internal readonly SCCommandAttribute Attribute;
+
             /// <summary>
             /// Create a new instance of <see cref="CommandMethodInfo"/>.
             /// </summary>
             /// <param name="method">Method info.</param>
             /// <param name="classType">Type of class method is located in.</param>
-            internal CommandMethodInfo(MethodInfo method, Type classType)
+            internal CommandMethodInfo(MethodInfo method, Type classType, SCCommandAttribute attribute)
             {
                 Method = method;
                 ClassType = classType;
+                Attribute = attribute;
             }
         }
 
