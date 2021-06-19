@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -134,26 +135,47 @@ namespace SimpleCommands.Runtime.Base
         private CommandMethodInfo[] FindCommandMethodInfo()
         {
             //Get all the assemblies to scan.
-            var targetAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Assembly[] targetAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             var commandMethods = new List<CommandMethodInfo>();
 
-            //For every assembly, get every possible class type.
-            for (var i = 0; i < targetAssemblies.Length; i++)
+            CompareInfo comparer = new CultureInfo("en-US").CompareInfo;
+
+            List<string> assembliesToIgnore = new List<string>();
+            PopulateAssembliesToIgnoreByPrefix(assembliesToIgnore);
+
+            //For every assembly that is not ignored, get every possible class type.
+            for (int i = 0; i < targetAssemblies.Length; i++)
             {
-                var types = targetAssemblies[i].GetTypes();
+                Assembly assembly = targetAssemblies[i];
+
+                string assemblyName = assembly.GetName().Name;
+                bool isIgnoredAssembly = false;
+
+                foreach (string name in assembliesToIgnore)
+                {
+                    if (comparer.IsPrefix(assemblyName, name))
+                    {
+                        isIgnoredAssembly = true;
+                        break;
+                    }
+                }
+
+                if (isIgnoredAssembly) continue;
+
+                Type[] types = assembly.GetTypes();
 
                 //For every class type found, get every method.
-                for (var j = 0; j < types.Length; j++)
+                for (int j = 0; j < types.Length; j++)
                 {
                     try
                     {
-                        var methods = types[j].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+                        MethodInfo[] methods = types[j].GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
                         //For every method found, check if the method has a command attribute defined for it.
-                        for (var k = 0; k < methods.Length; k++)
+                        for (int k = 0; k < methods.Length; k++)
                         {
-                            var attribute = methods[k].GetCustomAttribute<SCCommandAttribute>();
+                            SCCommandAttribute attribute = methods[k].GetCustomAttribute<SCCommandAttribute>();
 
                             //If attribute exists, add it to the list of method info that contain an attribute.
                             if (attribute != null && attribute.Include)
@@ -162,7 +184,7 @@ namespace SimpleCommands.Runtime.Base
                     }
                     catch(Exception e)
                     {
-                        Debug.Log(e);
+                        Debug.LogWarning(e);
                     }
                 }
             }
@@ -195,6 +217,32 @@ namespace SimpleCommands.Runtime.Base
                 Method = method;
                 ClassType = classType;
             }
+        }
+
+        /// <summary>
+        /// Populate a list<string> with prefixes of assemblies names that should not be included as part of the scanning for `SCCommand` attribute.
+        /// </summary>
+        /// <param name="assembliesToIgnore">List of assemblies to ignore by prefix.</param>
+        protected virtual void PopulateAssembliesToIgnoreByPrefix(List<string> assembliesToIgnore)
+        {
+
+            assembliesToIgnore.Add("Unity");
+            assembliesToIgnore.Add("System");
+            assembliesToIgnore.Add("Mono.");
+            assembliesToIgnore.Add("mscorlib");
+            assembliesToIgnore.Add("netstandard");
+            assembliesToIgnore.Add("TextMeshPro");
+            assembliesToIgnore.Add("Microsoft.GeneratedCode");
+            assembliesToIgnore.Add("I18N");
+            assembliesToIgnore.Add("Boo.");
+            assembliesToIgnore.Add("UnityScript.");
+            assembliesToIgnore.Add("ICSharpCode.");
+            assembliesToIgnore.Add("ExCSS.Unity");
+            assembliesToIgnore.Add("Assembly-CSharp-Editor");
+            assembliesToIgnore.Add("Assembly-UnityScript-Editor");
+            assembliesToIgnore.Add("nunit.");
+            assembliesToIgnore.Add("SyntaxTree.");
+            assembliesToIgnore.Add("AssetStoreTools");
         }
     }
 }
