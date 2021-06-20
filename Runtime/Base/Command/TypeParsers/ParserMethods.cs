@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
 // SOFTWARE.
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SimpleCommands.Runtime.Base
@@ -30,12 +31,17 @@ namespace SimpleCommands.Runtime.Base
     /// </summary>
     public static class ParserMethods
     {
+        public static string TrimBrackets(string s)
+        {
+            return s.Trim('(', ')', '[', ']');
+        }
+
         /// <summary>
         /// Parse string to return a Vector2.
         /// </summary>
         public static Vector2 ParseVector2(string s)
         {
-            var values = s.Split(',');
+            var values = TrimBrackets(s).Split(',');
 
             return new Vector2(float.Parse(values[0]), float.Parse(values[1]));
         }
@@ -45,7 +51,7 @@ namespace SimpleCommands.Runtime.Base
         /// </summary>
         public static Vector3 ParseVector3(string s)
         {
-            var values = s.Split(',');
+            var values = TrimBrackets(s).Split(',');
 
             return new Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
         }
@@ -55,7 +61,7 @@ namespace SimpleCommands.Runtime.Base
         /// </summary>
         public static Vector4 ParseVector4(string s)
         {
-            var values = s.Split(',');
+            var values = TrimBrackets(s).Split(',');
 
             return new Vector4(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
         }
@@ -65,7 +71,7 @@ namespace SimpleCommands.Runtime.Base
         /// </summary>
         public static Rect ParseRect(string s)
         {
-            var values = s.Split(',');
+            var values = TrimBrackets(s).Split(',');
 
             return new Rect(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
         }
@@ -75,12 +81,71 @@ namespace SimpleCommands.Runtime.Base
         /// </summary>
         public static GameObject ParseGameObject(string s)
         {
-            var data = s.Split(':');
+            var data = TrimBrackets(s).Split(':');
 
             if (data[0] == "id")
                 return ParseGORunTimeID(data[1]);
             else if (data[0] == "n:")
                 return ParseGOByName(data[1]);
+            else if (data[0] == "t:")
+                return ParseGOByTag(data[1]);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Parse string where the string represents the runtime ID or name of the gameobject to find and return.
+        /// </summary>
+        public static GameObject[] ParseGameObjects(string s)
+        {
+            s = TrimBrackets(s).Trim();
+
+            if (s.StartsWith("{") && s.EndsWith("}"))
+            {
+                s = s.Remove(0);
+                s = s.Remove(s.Length - 1);
+
+                List<GameObject> gameObjects = new List<GameObject>();
+
+                var arrayElements = s.Split(',');
+
+                for (int i = 0; i < arrayElements.Length; i++)
+                {
+                    GameObject[] gameObject = null;
+
+                    var data = arrayElements[i].Split(':');
+
+                    if (data[0] == "id")
+                        gameObject = new GameObject[] { ParseGORunTimeID(data[1]) };
+                    else if (data[0] == "n:")
+                        gameObject = new GameObject[] { ParseGOByName(data[1]) };
+                    else if (data[0] == "t:")
+                        gameObject = new GameObject[] { ParseGOByTag(data[1]) };
+                    else if (data[0] == "t-all:")
+                        gameObject = ParseGOsByTag(data[1]);
+
+                    for (int j = 0; j < gameObject.Length; j++)
+                    {
+                        if (gameObject[j] != null)
+                        {
+                            gameObjects.Add(gameObject[j]);
+                        }
+                        else
+                        {
+                            SCBase.OutConsole($"Could not find gameobject for element [{data[0]}:{data[1]}]", OutputType.WARNING);
+                        }
+                    }
+                }
+
+                return gameObjects.ToArray();
+            }
+            else
+            {
+                var data = s.Split(':');
+
+                if (data[0] == "t-all:")
+                    return ParseGOsByTag(data[1]);
+            }
 
             return null;
         }
@@ -107,6 +172,22 @@ namespace SimpleCommands.Runtime.Base
         private static GameObject ParseGOByName(string s)
         {
             return GameObject.Find(s);
+        }
+
+        /// <summary>
+        /// Parse string where the string represents the tag of a GameObject to find and return.
+        /// </summary>
+        private static GameObject ParseGOByTag(string s)
+        {
+            return GameObject.FindGameObjectWithTag(s);
+        }
+
+        /// <summary>
+        /// Parse string where the string represents the tag of a GameObjects to find and return.
+        /// </summary>
+        private static GameObject[] ParseGOsByTag(string s)
+        {
+            return GameObject.FindGameObjectsWithTag(s);
         }
     }
 }
