@@ -164,7 +164,6 @@ namespace SimpleCommands.Runtime.Implementations
         /// <summary>
         /// Functionality that allows the console output to be printed to a text file within the project package.
         /// </summary>
-        [SCCommand("sc_print", "Writes the console outputs into a .txt file.")]
         public void PrintToTextFile()
         {
             var outputPath = GetPrintOutputPath();
@@ -181,6 +180,12 @@ namespace SimpleCommands.Runtime.Implementations
                     Debug.LogError(exception);
                 }
             }
+        }
+
+        [SCCommand("sc_print", "Writes the console outputs into a .txt file.")]
+        private static void PrintToTextFileCommand()
+        {
+            ((CommandOutputDisplay)SCBase.Instance.OutputDisplay).PrintToTextFile();
         }
 
         /// <summary>
