@@ -61,7 +61,7 @@ namespace SimpleCommands.Runtime.Base
 
         protected virtual void CreateMap()
         {
-            var parserMethodInfo = MethodScanner.FindAttributeMethodInfo<SCTypeParserAttribute>(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+            var parserMethodInfo = ReflectionUtils.FindAttributeMethodInfo<SCTypeParserAttribute>(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
 
             //For every method information stored.
             for (var i = 0; i < parserMethodInfo.Length; i++)

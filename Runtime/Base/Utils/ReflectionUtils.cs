@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SimpleCommands.Runtime.Base
 {
-    internal static class MethodScanner
+    internal static class ReflectionUtils
     {
         public static AttributeMethodInfo<TAttribute>[] FindAttributeMethodInfo<TAttribute>(BindingFlags flags) where TAttribute : Attribute
         {
@@ -49,7 +49,7 @@ namespace SimpleCommands.Runtime.Base
                     {
                         MethodInfo[] methods = types[j].GetMethods(flags);
 
-                        //For every method found, check if the method has a command attribute defined for it.
+                        //For every method found, check if the method has a attribute defined for it.
                         for (int k = 0; k < methods.Length; k++)
                         {
                             IEnumerable<TAttribute> attributes = methods[k].GetCustomAttributes<TAttribute>();

@@ -90,7 +90,7 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="parsersMap">The instance of <see cref="ITypeParsersMap" implementation./></param>
         protected virtual void CreateMap(TypeParsersMap parsersMap)
         {
-            var commandMethodInfo = MethodScanner.FindAttributeMethodInfo<SCCommandAttribute>(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+            var commandMethodInfo = ReflectionUtils.FindAttributeMethodInfo<SCCommandAttribute>(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
 
             //For every method information stored.
             for (var i = 0; i < commandMethodInfo.Length; i++)
