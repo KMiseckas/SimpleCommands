@@ -90,7 +90,7 @@ namespace SimpleCommands
         /// Instance of the ITargetParser that holds the mapping between the string target type to the parser function that provides the objects which to target for command
         /// execution onto.
         /// </summary>
-        private ITargetParser _CommandTargetParsers;
+        private TargetParsersMap _CommandTargetParsers;
 
         /// <summary>
         /// The display which will show the output text.
@@ -158,7 +158,7 @@ namespace SimpleCommands
         /// <summary>
         /// Get instance of <see cref="ITargetParser"/>.
         /// </summary>
-        public ITargetParser CommandTargetParser => _CommandTargetParsers;
+        public TargetParsersMap CommandTargetParser => _CommandTargetParsers;
 
         /// <summary>
         /// Get or create an instance of this object depending on whether it already exists or not. Thread safe.
@@ -279,9 +279,9 @@ namespace SimpleCommands
         /// which to target for command execution onto.
         /// </summary>
         /// <returns>New instance of <see cref="ITargetParser"/> implementation.</returns>
-        protected virtual ITargetParser CreateCommandTargetParsers()
+        protected virtual TargetParsersMap CreateCommandTargetParsers()
         {
-            return new CommandTargetParserMap();
+            return new TargetParsersMap();
         }
 
         /// <summary>
