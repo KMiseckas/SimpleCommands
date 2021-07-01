@@ -36,9 +36,64 @@ namespace SimpleCommands.Runtime.Base
             return s.Trim('(', ')', '[', ']');
         }
 
+        [SCTypeParser]
+        public static int ParseInt(string s)
+        {
+            return int.Parse(s);
+        }
+
+        [SCTypeParser]
+        public static float ParseFloat(string s)
+        {
+            return float.Parse(s);
+        }
+
+        [SCTypeParser]
+        public static double ParseDouble(string s)
+        {
+            return double.Parse(s);
+        }
+
+        [SCTypeParser]
+        public static long ParseLong(string s)
+        {
+            return long.Parse(s);
+        }
+
+        [SCTypeParser]
+        public static byte ParseByte(string s)
+        {
+            return byte.Parse(s);
+        }
+
+        [SCTypeParser]
+        public static uint ParseUInt(string s)
+        {
+            return uint.Parse(s);
+        }
+
+        [SCTypeParser]
+        public static bool ParseBool(string s)
+        {
+            return bool.Parse(s);
+        }
+
+        [SCTypeParser]
+        public static string ParseString(string s)
+        {
+            return s;
+        }
+
+        [SCTypeParser]
+        public static char ParseChar(string s)
+        {
+            return char.Parse(s);
+        }
+
         /// <summary>
         /// Parse string to return a Vector2.
         /// </summary>
+        [SCTypeParser]
         public static Vector2 ParseVector2(string s)
         {
             var values = TrimBrackets(s).Split(',');
@@ -46,9 +101,16 @@ namespace SimpleCommands.Runtime.Base
             return new Vector2(float.Parse(values[0]), float.Parse(values[1]));
         }
 
+        [SCCommand]
+        public static void PrintOutVals(int val, Vector2 val2, string val3, float val4)
+        {
+            SCBase.OutConsole(val + " | " + val2 + " | " + val3 + " | " + val4);
+        }
+
         /// <summary>
         /// Parse string to return a Vector3.
         /// </summary>
+        [SCTypeParser]
         public static Vector3 ParseVector3(string s)
         {
             var values = TrimBrackets(s).Split(',');
@@ -59,6 +121,7 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// Parse string to return a Vector4.
         /// </summary>
+        [SCTypeParser]
         public static Vector4 ParseVector4(string s)
         {
             var values = TrimBrackets(s).Split(',');
@@ -69,6 +132,7 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// Parse string to return a Rect.
         /// </summary>
+        [SCTypeParser]
         public static Rect ParseRect(string s)
         {
             var values = TrimBrackets(s).Split(',');
@@ -79,6 +143,7 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// Parse string where the string represents the runtime ID or name of the gameobject to find and return.
         /// </summary>
+        [SCTypeParser]
         public static GameObject ParseGameObject(string s)
         {
             var data = TrimBrackets(s).Split(':');
@@ -96,6 +161,7 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// Parse string where the string represents the runtime ID or name of the gameobject to find and return.
         /// </summary>
+        [SCTypeParser]
         public static GameObject[] ParseGameObjects(string s)
         {
             s = TrimBrackets(s).Trim();
