@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using SimpleCommands.Runtime.Base;
 
@@ -47,7 +48,10 @@ namespace SimpleCommands.Runtime.Implementations
 
             StripTargetInfo(ref commandInput, out string targetInfoString);
 
-            string[] splitCommand = commandInput.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] splitCommand = Regex.Matches(commandInput, @"([`\""])(?<value>.+?)\1|(?<value>[^ ]+)")
+                .Cast<Match>()
+                .Select(m => m.Groups["value"].Value)
+                .ToArray();
 
             string commandKey = splitCommand[0];
             string[] paramParse = new string[0];
