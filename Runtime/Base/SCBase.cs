@@ -33,7 +33,9 @@ namespace SimpleCommands
     /// Base abstract class that handles the overall console / command system. Acts as a singleton and does not get destroyed on scene changes.
     /// This only works with the new Unity Input system and requires a component of <see cref="PlayerInput"/>.
     /// </summary>
+#if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
+#endif
     public abstract class SCBase : MonoBehaviour
     {
         /// <summary>
