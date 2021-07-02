@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SimpleCommands.Runtime.Base
 {
@@ -71,7 +72,12 @@ namespace SimpleCommands.Runtime.Base
             for (var i = 0; i < parserMethodInfo.Length; i++)
             {
                 var method = parserMethodInfo[i].MethodInfo;
+                var methodParams = method.GetParameters();
                 var attribute = parserMethodInfo[i].Attribute;
+
+                Assert.IsTrue(methodParams.Length == 2, $"Method of [{method.Name}] in [{method.DeclaringType}] with attribute [SCTargetParser] must only contain 2 parameters.");
+                Assert.IsTrue(methodParams[0].ParameterType.Equals(typeof(SCCommand)) && methodParams[1].ParameterType.Equals(typeof(string)), $"Method of [{method.Name}] in [{method.DeclaringType}] with attribute [SCTargetParser] must only contain 2 parameters of type `SCCommand` and `string` respectively.");
+                Assert.IsTrue(method.ReturnType.Equals(typeof(object[])), $"Method of [{method.Name}] in [{method.DeclaringType}] with attribute [SCTargetParser] must return the `Type` of `object[]`.");
 
                 AddTargetParser(attribute.Key, (x, y) => { return (object[])method.Invoke(null, new object[] { x, y }); }, attribute.Priority);
             }
