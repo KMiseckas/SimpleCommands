@@ -101,12 +101,6 @@ namespace SimpleCommands.Runtime.Base
             return new Vector2(float.Parse(values[0]), float.Parse(values[1]));
         }
 
-        [SCCommand]
-        public static void PrintOutVals(int val, Vector2 val2, string val3, float val4)
-        {
-            SCBase.OutConsole(val + " | " + val2 + " | " + val3 + " | " + val4);
-        }
-
         /// <summary>
         /// Parse string to return a Vector3.
         /// </summary>
