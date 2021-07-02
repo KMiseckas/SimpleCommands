@@ -37,7 +37,7 @@ namespace SimpleCommands.Runtime.Implementations
     /// For more info see <see cref="ParsersMap"/>.
     /// <br/><br/>
     /// </summary>
-    public class SCCore : SCBase
+    public class SCDefault : SCBase
     {
         /// <summary>
         /// <inheritdoc/>
