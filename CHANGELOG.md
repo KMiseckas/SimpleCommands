@@ -5,7 +5,8 @@
 - Addition: #18: Added comments to all existing classes.
 - Addition: #31: Added a new class of `Display`.
 
-
+- Change: #65: `Target` and `Type` parsers now have to be defined using `SCTargetParser` and `SCTypeParser` attributes.
+- Change: #65: Removed interfaces for `ICommandMap`, `ITypeParsersMap` and `ITargetParsersMap`.
 - Change: #31: Refactored how the console displays are set to be visible or hidden.
 - Change: #31: Refactored some properties, fields and methods in the `SCBase` class.
 - Change: #21: Refactored how `IParsersMap` is used within the project.

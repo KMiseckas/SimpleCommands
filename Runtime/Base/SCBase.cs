@@ -33,7 +33,9 @@ namespace SimpleCommands
     /// Base abstract class that handles the overall console / command system. Acts as a singleton and does not get destroyed on scene changes.
     /// This only works with the new Unity Input system and requires a component of <see cref="PlayerInput"/>.
     /// </summary>
+#if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
+#endif
     public abstract class SCBase : MonoBehaviour
     {
         /// <summary>
@@ -76,7 +78,7 @@ namespace SimpleCommands
         /// <summary>
         /// Instance of the <see cref="ICommandMap"/> implementation used for retrieving instances of <see cref="SCCommand"/>.
         /// </summary>
-        protected ICommandMap _CommandMap;
+        protected CommandMap _CommandMapRef;
 
         /// <summary>
         /// Instance of the <see cref="ICommandInputParser"/> implementation used for trying to parse the command string that is visible in the console input field in order
@@ -88,7 +90,7 @@ namespace SimpleCommands
         /// Instance of the ITargetParser that holds the mapping between the string target type to the parser function that provides the objects which to target for command
         /// execution onto.
         /// </summary>
-        private ITargetParser _CommandTargetParsers;
+        private TargetParsersMap _CommandTargetParsers;
 
         /// <summary>
         /// The display which will show the output text.
@@ -131,7 +133,7 @@ namespace SimpleCommands
         /// <summary>
         /// Get instance of <see cref="ICommandMap"/>.
         /// </summary>
-        public ICommandMap CommandMap => _CommandMap;
+        public CommandMap CommandMapRef => _CommandMapRef;
 
         /// <summary>
         /// Get instance of <see cref="BaseCommandOutputDisplay"/>.
@@ -156,7 +158,7 @@ namespace SimpleCommands
         /// <summary>
         /// Get instance of <see cref="ITargetParser"/>.
         /// </summary>
-        public ITargetParser CommandTargetParser => _CommandTargetParsers;
+        public TargetParsersMap CommandTargetParser => _CommandTargetParsers;
 
         /// <summary>
         /// Get or create an instance of this object depending on whether it already exists or not. Thread safe.
@@ -189,13 +191,13 @@ namespace SimpleCommands
 
             _Instance = this;
 
-            _CommandMap = CreateCommandMap();
+            _CommandMapRef = CreateCommandMap();
             _CommandInputParser = CreateCommandInputParser();
             _CommandSuggester = CreateCommandSuggester();
             _CommandTargetParsers = CreateCommandTargetParsers();
 
             //Populate the suggester with the collection of all the command keys.
-            _CommandSuggester.AddCollection(_CommandMap.GetAllCommandKeys());
+            _CommandSuggester.AddCollection(_CommandMapRef.GetAllCommandKeys());
 
 #if ENABLE_INPUT_SYSTEM
             _Input = GetComponent<PlayerInput>();
@@ -240,10 +242,22 @@ namespace SimpleCommands
 #endif
 
         /// <summary>
-        /// Create and return a new instance of <see cref="ICommandMap"/> implementation from which commands <see cref="SCCommand"/>s will be retrieved.
+        /// Create and return a new instance of <see cref="CommandMap"/> from which commands <see cref="SCCommand"/>s will be retrieved.
         /// </summary>
-        /// <returns>New instance of <see cref="ICommandMap"/> implementation.</returns>
-        protected abstract ICommandMap CreateCommandMap();
+        /// <returns>New instance of <see cref="CommandMap"/>.</returns>
+        protected CommandMap CreateCommandMap()
+        {
+            return new CommandMap(CreateParserMap());
+        }
+
+        /// <summary>
+        /// Create a new instance of <see cref="TypeParsersMap"/>.
+        /// </summary>
+        /// <returns>New instance of <see cref="TypeParsersMap"/>.</returns>
+        protected virtual TypeParsersMap CreateParserMap()
+        {
+            return new TypeParsersMap();
+        }
 
         /// <summary>
         /// Create a new implementation instance of <see cref="ICommandInputParser"/>.
@@ -265,9 +279,9 @@ namespace SimpleCommands
         /// which to target for command execution onto.
         /// </summary>
         /// <returns>New instance of <see cref="ITargetParser"/> implementation.</returns>
-        protected virtual ITargetParser CreateCommandTargetParsers()
+        protected virtual TargetParsersMap CreateCommandTargetParsers()
         {
-            return new CommandTargetParserMap();
+            return new TargetParsersMap();
         }
 
         /// <summary>
@@ -374,7 +388,7 @@ namespace SimpleCommands
                 _CommandHistory.RemoveLast();
             }
 
-            if (!_CommandMap.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
+            if (!_CommandMapRef.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
                 OutConsole($"Command `{commandInputInfo.CommandKey}` not found.", OutputType.WARNING);
             }
@@ -454,7 +468,7 @@ namespace SimpleCommands
 
             for (int i = 0; i < stringCommandSuggestions.Length; i++)
             {
-                if (_CommandMap.TryGetCommand(stringCommandSuggestions[i], out SCCommand command))
+                if (_CommandMapRef.TryGetCommand(stringCommandSuggestions[i], out SCCommand command))
                 {
                     _CurrentCommandSuggestions.Add(command);
                 }

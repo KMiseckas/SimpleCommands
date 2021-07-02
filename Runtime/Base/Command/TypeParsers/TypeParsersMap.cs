@@ -22,7 +22,8 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Reflection;
+using UnityEngine.Assertions;
 
 namespace SimpleCommands.Runtime.Base
 {
@@ -31,13 +32,13 @@ namespace SimpleCommands.Runtime.Base
     /// for <see cref="SCCore"/>.<br/><br/>
     /// See <see cref="ITypeParsersMap"/> for explanation.
     /// </summary>
-    public class ParsersMap : ITypeParsersMap
+    public class TypeParsersMap
     {
         /// <summary>
         /// Static dictionary that contains the types and their respectful parsers of type <see cref="Func{string, object}"/>. These parsers will convert a object in string format
         /// to its object form (if applicable).
         /// </summary>
-        private readonly static Dictionary<Type, Func<string, object>> _TypeParsers = new Dictionary<Type, Func<string, object>>();
+        private readonly static Dictionary<Type, ParserInfo> _TypeParsers = new Dictionary<Type, ParserInfo>();
 
         /// <summary>
         /// Have statics been initialised already.
@@ -45,9 +46,9 @@ namespace SimpleCommands.Runtime.Base
         private static bool _AreStaticInitialized;
 
         /// <summary>
-        /// Create a new instance of the <see cref="ParsersMap"/>.
+        /// Create a new instance of the <see cref="TypeParsersMap"/>.
         /// </summary>
-        public ParsersMap()
+        protected internal TypeParsersMap()
         {
             if (!_AreStaticInitialized)
             {
@@ -57,27 +58,25 @@ namespace SimpleCommands.Runtime.Base
             }
         }
 
-        /// <summary>
-        /// Create the map of of parsers to their types to parse to. 
-        /// </summary>
         protected virtual void CreateMap()
         {
-            AddParserFunc(typeof(int), (x) => { return int.Parse(x); });
-            AddParserFunc(typeof(float), (x) => { return float.Parse(x); });
-            AddParserFunc(typeof(double), (x) => { return double.Parse(x); });
-            AddParserFunc(typeof(long), (x) => { return long.Parse(x); });
-            AddParserFunc(typeof(byte), (x) => { return byte.Parse(x); });
-            AddParserFunc(typeof(uint), (x) => { return uint.Parse(x); });
-            AddParserFunc(typeof(bool), (x) => { return bool.Parse(x); });
-            AddParserFunc(typeof(string), (x) => { return x; });
-            AddParserFunc(typeof(char), (x) => { return char.Parse(x); });
-            AddParserFunc(typeof(GameObject), (x) => { return ParserMethods.ParseGameObject(x); });
-            AddParserFunc(typeof(GameObject[]), (x) => { return ParserMethods.ParseGameObject(x); });
-            AddParserFunc(typeof(Vector2), (x) => { return ParserMethods.ParseVector2(x); });
-            AddParserFunc(typeof(Vector3), (x) => { return ParserMethods.ParseVector3(x); });
-            AddParserFunc(typeof(Vector4), (x) => { return ParserMethods.ParseVector4(x); });
-            AddParserFunc(typeof(Rect), (x) => { return ParserMethods.ParseRect(x); });
+            var parserMethodInfo = ReflectionUtils.FindAttributeMethodInfo<SCTypeParserAttribute>(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+
+            //For every method information stored.
+            for (var i = 0; i < parserMethodInfo.Length; i++)
+            {
+                var parserMethod = parserMethodInfo[i].MethodInfo;
+                var methodParams = parserMethod.GetParameters();
+                var attribute = parserMethodInfo[i].Attribute;
+
+                Assert.IsTrue(methodParams.Length == 1, $"Method of [{parserMethod.Name}] in [{parserMethod.DeclaringType}] with attribute [SCTypeParser] must only contain a single parameter");
+                Assert.IsTrue(methodParams[0].ParameterType.Equals(typeof(string)), $"Method of [{parserMethod.Name}] in [{parserMethod.DeclaringType}] with attribute [SCTypeParser] must only contain a single parameter of type `string`");
+                Assert.IsTrue(!parserMethod.ReturnType.Equals(typeof(void)), $"Method of [{parserMethod.Name}] in [{parserMethod.DeclaringType}] with attribute [SCTypeParser] must return the `Type` of object that it is supposed to parse");
+
+                AddParserFunc(parserMethod.ReturnType, (x) => { return parserMethod.Invoke(null, new object[] { x }); }, attribute.Priority);
+            }
         }
+
 
         /// <summary>
         /// Add a parser function for a given type.
@@ -85,23 +84,45 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="typeKey">Type the parser being added for is.</param>
         /// <param name="parserFunc">The func that acts as a parser for given parser</param>
         /// <param name="overrideExisting">Should the existing parser for the given type be overriden. False by default.</param>
-        protected void AddParserFunc(Type typeKey, Func<string, object> parserFunc, bool overrideExisting = false)
+        protected void AddParserFunc(Type typeKey, Func<string, object> parserFunc, int priority)
         {
             if (_TypeParsers.ContainsKey(typeKey))
-                if (overrideExisting)
-                    _TypeParsers.Remove(typeKey);
-                else
-                    throw new Exception($"Cannot add parser for type `{typeKey.Name}` as it already exists in the class `{GetType().Name}`.");
+            {
+                _TypeParsers.TryGetValue(typeKey, out ParserInfo info);
 
-            _TypeParsers.Add(typeKey, parserFunc);
+                if (priority >= info.Priority)
+                {
+                    _TypeParsers.Remove(typeKey);
+
+                    SCBase.OutConsole($"Overriding parser for type [{typeKey.Name}] with priority level of [{priority}].", OutputType.INFO);
+                }
+            }
+
+            _TypeParsers.Add(typeKey, new ParserInfo(parserFunc, priority));
         }
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public bool GetParser(Type typeToParse, out Func<string, object> parserFunc)
         {
-            return _TypeParsers.TryGetValue(typeToParse, out parserFunc);
+            parserFunc = null;
+
+            if (!_TypeParsers.TryGetValue(typeToParse, out ParserInfo info)) return false;
+
+            parserFunc = info.ParserFunc;
+
+            return true;
+        }
+
+        public struct ParserInfo
+        {
+            public readonly Func<string, object> ParserFunc;
+
+            public readonly int Priority;
+
+            public ParserInfo(Func<string, object> func, int priority)
+            {
+                ParserFunc = func;
+                Priority = priority;
+            }
         }
     }
 }
