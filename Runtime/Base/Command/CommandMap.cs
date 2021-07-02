@@ -78,7 +78,7 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public virtual bool TryGetCommand(string commandKey, out SCCommand command)
+        public bool TryGetCommand(string commandKey, out SCCommand command)
         {
             return _CommandMap.TryGetValue(commandKey, out command);
         }

@@ -29,7 +29,7 @@ namespace SimpleCommands.Runtime.Base
     /// <summary>
     /// Parser methods for several different types of instances.
     /// </summary>
-    public static class ParserMethods
+    public static class DefaultTypeParsers
     {
         public static string TrimBrackets(string s)
         {

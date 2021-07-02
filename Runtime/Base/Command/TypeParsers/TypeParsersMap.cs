@@ -22,9 +22,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Reflection;
-using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SimpleCommands.Runtime.Base
 {
@@ -66,13 +65,15 @@ namespace SimpleCommands.Runtime.Base
             //For every method information stored.
             for (var i = 0; i < parserMethodInfo.Length; i++)
             {
-                var commandMethod = parserMethodInfo[i].MethodInfo;
-                var methodParams = commandMethod.GetParameters();
+                var parserMethod = parserMethodInfo[i].MethodInfo;
+                var methodParams = parserMethod.GetParameters();
                 var attribute = parserMethodInfo[i].Attribute;
-                var methodParamCount = methodParams.Length;
-                var cmdParamInfo = new ParamInfo[methodParamCount];
 
-                AddParserFunc(commandMethod.ReturnType, (x) => { return commandMethod.Invoke(null, new object[] { x }); }, attribute.Priority);
+                Assert.IsTrue(methodParams.Length == 1, $"Method of [{parserMethod.Name}] in [{parserMethod.DeclaringType}] with attribute [SCTypeParser] must only contain a single parameter");
+                Assert.IsTrue(methodParams[0].ParameterType.Equals(typeof(string)), $"Method of [{parserMethod.Name}] in [{parserMethod.DeclaringType}] with attribute [SCTypeParser] must only contain a single parameter of type `string`");
+                Assert.IsTrue(!parserMethod.ReturnType.Equals(typeof(void)), $"Method of [{parserMethod.Name}] in [{parserMethod.DeclaringType}] with attribute [SCTypeParser] must return the `Type` of object that it is supposed to parse");
+
+                AddParserFunc(parserMethod.ReturnType, (x) => { return parserMethod.Invoke(null, new object[] { x }); }, attribute.Priority);
             }
         }
 
@@ -83,7 +84,7 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="typeKey">Type the parser being added for is.</param>
         /// <param name="parserFunc">The func that acts as a parser for given parser</param>
         /// <param name="overrideExisting">Should the existing parser for the given type be overriden. False by default.</param>
-        protected virtual void AddParserFunc(Type typeKey, Func<string, object> parserFunc, int priority)
+        protected void AddParserFunc(Type typeKey, Func<string, object> parserFunc, int priority)
         {
             if (_TypeParsers.ContainsKey(typeKey))
             {
@@ -100,7 +101,7 @@ namespace SimpleCommands.Runtime.Base
             _TypeParsers.Add(typeKey, new ParserInfo(parserFunc, priority));
         }
 
-        public virtual bool GetParser(Type typeToParse, out Func<string, object> parserFunc)
+        public bool GetParser(Type typeToParse, out Func<string, object> parserFunc)
         {
             parserFunc = null;
 
