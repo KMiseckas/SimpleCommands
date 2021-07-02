@@ -21,9 +21,6 @@
 // SOFTWARE.
 
 using SimpleCommands.Runtime.Base;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.UI;
 
 namespace SimpleCommands.Runtime.Implementations
 {
