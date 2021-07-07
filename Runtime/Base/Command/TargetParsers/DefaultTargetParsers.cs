@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
