@@ -4,8 +4,11 @@ using System;
 using System.Collections.Generic;
 using SimpleCommands.Runtime.Base;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace SimpleCommands
 {
@@ -204,7 +207,7 @@ namespace SimpleCommands
         {
             if (Input.GetKeyUp(KeyCode.Tilde))
             {
-                ToggleConsole(default);
+                ToggleConsole();
             }
             else if(Input.GetKeyUp(KeyCode.Return))
             {
@@ -212,11 +215,11 @@ namespace SimpleCommands
             }
             else if(Input.GetKeyUp(KeyCode.UpArrow))
             {
-                PreviousCommand(default);
+                PreviousCommand();
             }
             else if(Input.GetKeyUp(KeyCode.DownArrow))
             {
-                NextCommand(default);
+                NextCommand();
             }
         }
 #endif
@@ -279,10 +282,11 @@ namespace SimpleCommands
         /// </summary>
         protected virtual void HookInputSystemActions()
         {
-            BindAction(ToggleConsole, "Toggle");
-            BindAction(IssueCommand, "Issue");
-            BindAction(PreviousCommand, "Previous");
-            BindAction(NextCommand, "Next");
+            BindAction(OnToggleConsoleInput, "Toggle");
+            BindAction(OnIssueCommandInput, "Issue");
+            BindAction(OnPreviousCommandInput, "Previous");
+            BindAction(OnNextCommandInput, "Next");
+
         }
 
         /// <summary>
@@ -309,12 +313,20 @@ namespace SimpleCommands
 
             action.performed += callback;
         }
+
+        /// <summary>
+        /// Logic to run when Toggle the console on/off input is detected.
+        /// </summary>
+        protected virtual void OnToggleConsoleInput(InputAction.CallbackContext obj)
+        {
+            OnToggleConsole();
+        }
 #endif
 
         /// <summary>
         /// Toggle the console on/off.
         /// </summary>
-        protected virtual void ToggleConsole(InputAction.CallbackContext obj)
+        protected virtual void OnToggleConsole()
         {
             _InputDisplay.SetVisible(!_InputDisplay.IsVisible);
             _OutputDisplay.SetVisible(!_OutputDisplay.IsVisible);
@@ -342,14 +354,6 @@ namespace SimpleCommands
         /// Issue a command with the current input field text as command input.
         /// </summary>
         public void IssueCommand()
-        {
-            IssueCommand(default);
-        }
-
-        /// <summary>
-        /// Issue a command with the current input field text as command input.
-        /// </summary>
-        protected void IssueCommand(InputAction.CallbackContext obj)
         {
             CommandInputInfo commandInputInfo = null;
 
@@ -390,10 +394,20 @@ namespace SimpleCommands
                 _InputDisplay.Focus();
         }
 
+#if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// On Issue a command input detected.
+        /// </summary>
+        protected void OnIssueCommandInput(InputAction.CallbackContext obj)
+        {
+            IssueCommand();
+        }
+#endif
+
         /// <summary>
         /// Set the input display field to show the previous command from the command history list.
         /// </summary>
-        protected void PreviousCommand(InputAction.CallbackContext obj)
+        protected void PreviousCommand()
         {
             if (_CurrentlyDisplayedCommand == null)
                 return;
@@ -404,10 +418,20 @@ namespace SimpleCommands
             _CurrentlyDisplayedCommand = _CurrentlyDisplayedCommand.Next == null ? temp : _CurrentlyDisplayedCommand.Next;
         }
 
+#if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// On previous command input detected.
+        /// </summary>
+        protected void OnPreviousCommandInput(InputAction.CallbackContext obj)
+        {
+            PreviousCommand();
+        }
+#endif
+
         /// <summary>
         /// Set the input display field to show the next command from the command history list.
         /// </summary>
-        protected void NextCommand(InputAction.CallbackContext obj)
+        protected void NextCommandInput()
         {
             if (_CurrentlyDisplayedCommand == null)
                 return;
@@ -422,6 +446,16 @@ namespace SimpleCommands
 
             _InputDisplay.OverrideInputString(commandString);
         }
+
+#if ENABLE_INPUT_SYSTEM
+        /// <summary>
+        /// On next command input detected.
+        /// </summary>
+        protected void OnNextCommandInput(InputAction.CallbackContext obj)
+        {
+            NextCommandInput();
+        }
+#endif
 
         /// <summary>
         /// Auto complete the input field with the passed in string argument.
