@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+using UnityEngine;
 
 namespace SimpleCommands.Runtime.Base
 {

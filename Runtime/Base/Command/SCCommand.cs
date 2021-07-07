@@ -1,3 +1,5 @@
+// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
 using System;
 using System.Reflection;
 using UnityEngine.Assertions;
@@ -63,7 +65,7 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="failOutput">The string message output received from the execution proccess for the console output.</param>
         /// <param name="targetInfo">The target info to tell on what to execute the commands intent on.</param>
         /// <returns>True if execution succeeded.</returns>
-        internal bool TryExecute(ITargetParser targetParserMap, string[] paramVals, out string failOutput, TargetInfo targetInfo = default)
+        internal bool TryExecute(TargetParsersMap targetParserMap, string[] paramVals, out string failOutput, TargetInfo targetInfo = default)
         {
             Assert.IsNotNull(paramVals);
 
@@ -125,7 +127,7 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="id">ID of the object(s) to look for.</param>
         /// <param name="targetObjects">The objects found with specified criteria.</param>
         /// <returns>True if an object or objects are found.</returns>
-        internal bool TryFindTargetsFromID(ITargetParser parserMap, string idType, string id, out object[] targetObjects)
+        internal bool TryFindTargetsFromID(TargetParsersMap parserMap, string idType, string id, out object[] targetObjects)
         {
             targetObjects = null;
 

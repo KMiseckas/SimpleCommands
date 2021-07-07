@@ -1,4 +1,6 @@
-﻿namespace SimpleCommands.Runtime.Base
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// Tree structure that holds characters which make up words as you go down the tree.

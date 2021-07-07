@@ -1,4 +1,6 @@
-﻿namespace SimpleCommands.Runtime.Base
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// Interface to be implemented by a class which can parse a command input string into an instance of <see cref="CommandInputInfo"/>.

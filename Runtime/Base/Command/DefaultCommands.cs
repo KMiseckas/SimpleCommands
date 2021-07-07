@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+using UnityEditor;
 using UnityEngine;
 
 namespace SimpleCommands.Runtime.Base
@@ -12,7 +14,7 @@ namespace SimpleCommands.Runtime.Base
         {
             int maxCommandsPerPage = 15;
 
-            string[] availableCommands = SCBase.Instance.CommandMap.GetAllCommandKeys();
+            string[] availableCommands = SCBase.Instance.CommandMapRef.GetAllCommandKeys();
 
             int commandCount = availableCommands.Length;
             int pages = 0;
@@ -37,7 +39,7 @@ namespace SimpleCommands.Runtime.Base
             {
                 SCCommand command = null;
 
-                if (!SCBase.Instance.CommandMap.TryGetCommand(availableCommands[i], out command))
+                if (!SCBase.Instance.CommandMapRef.TryGetCommand(availableCommands[i], out command))
                 {
                     SCBase.OutConsole($"Command [{availableCommands[i]}] could not be found in the command map.", OutputType.WARNING);
                     continue;
@@ -73,7 +75,7 @@ namespace SimpleCommands.Runtime.Base
         [SCCommand(commandKey: "SC_Command_Help", commandDescription: "Display detailed help for a given command.")]
         public static void CommandHelp(string commandKey)
         {
-            if (!SCBase.Instance.CommandMap.TryGetCommand(commandKey, out SCCommand command))
+            if (!SCBase.Instance.CommandMapRef.TryGetCommand(commandKey, out SCCommand command))
             {
                 string[] commandKeySuggestion = SCBase.Instance.CommandSuggester.GetSuggestions(commandKey);
 

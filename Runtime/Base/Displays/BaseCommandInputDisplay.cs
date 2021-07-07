@@ -1,4 +1,6 @@
-﻿namespace SimpleCommands.Runtime.Base
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// The abstract input display that is used for input text rendering.

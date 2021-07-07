@@ -1,4 +1,6 @@
-﻿namespace SimpleCommands.Runtime.Base
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// The build target for which the command should be available to use within.<br></br><br></br>

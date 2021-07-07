@@ -1,4 +1,6 @@
-﻿using UnityEngine.Assertions;
+﻿// Copyright (c) 2021 Klaudijus Miseckas. All Rights Reserved
+
+using UnityEngine.Assertions;
 
 namespace SimpleCommands.Runtime.Base
 {
