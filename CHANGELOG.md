@@ -1,4 +1,8 @@
+#### Fixes
+#70: Fixed import and method errors due to legacy input.
+
 [0.2.0] - Internal Release
+
 #### Additions
 #24, #10, #7: Added ability to add modular input and output displays with a default implementation that comes with basic features.  
 #13: Added ability to select which monobehaviour instance to call the command on by using tags or instance ID's.  
