@@ -319,14 +319,14 @@ namespace SimpleCommands
         /// </summary>
         protected virtual void OnToggleConsoleInput(InputAction.CallbackContext obj)
         {
-            OnToggleConsole();
+            ToggleConsole();
         }
 #endif
 
         /// <summary>
         /// Toggle the console on/off.
         /// </summary>
-        protected virtual void OnToggleConsole()
+        protected virtual void ToggleConsole()
         {
             _InputDisplay.SetVisible(!_InputDisplay.IsVisible);
             _OutputDisplay.SetVisible(!_OutputDisplay.IsVisible);
@@ -431,7 +431,7 @@ namespace SimpleCommands
         /// <summary>
         /// Set the input display field to show the next command from the command history list.
         /// </summary>
-        protected void NextCommandInput()
+        protected void NextCommand()
         {
             if (_CurrentlyDisplayedCommand == null)
                 return;
@@ -453,7 +453,7 @@ namespace SimpleCommands
         /// </summary>
         protected void OnNextCommandInput(InputAction.CallbackContext obj)
         {
-            NextCommandInput();
+            NextCommand();
         }
 #endif
 
