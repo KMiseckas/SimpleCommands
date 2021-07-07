@@ -207,7 +207,7 @@ namespace SimpleCommands
         {
             if (Input.GetKeyUp(KeyCode.Tilde))
             {
-                ToggleConsole(default);
+                ToggleConsole();
             }
             else if(Input.GetKeyUp(KeyCode.Return))
             {
@@ -215,11 +215,11 @@ namespace SimpleCommands
             }
             else if(Input.GetKeyUp(KeyCode.UpArrow))
             {
-                PreviousCommand(default);
+                PreviousCommand();
             }
             else if(Input.GetKeyUp(KeyCode.DownArrow))
             {
-                NextCommand(default);
+                NextCommand();
             }
         }
 #endif
