@@ -12,6 +12,7 @@
 #79: Fixes an issue where the legacy input would run inverted logic to the new input system when pressing `down` or `up` arrow keys.
 #80: Fixed an issue where `BackQuote` input would toggle console even when pressing the single quote key.
 #82: Fixed an issue where trying to issue a command on a run instance ID target would not work.
+#83: Fixed an issue where the input caret would not be focused to the end of line when cycling next or previous commands.
 
 [0.2.0] - Internal Release
 

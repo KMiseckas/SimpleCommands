@@ -456,6 +456,9 @@ namespace SimpleCommands
 
             LinkedListNode<string> temp = _CurrentlyDisplayedCommand;
             _CurrentlyDisplayedCommand = _CurrentlyDisplayedCommand.Next == null ? temp : _CurrentlyDisplayedCommand.Next;
+
+            if (_AutoFocusPostCommand)
+                _InputDisplay.Focus();
         }
 
 #if ENABLE_INPUT_SYSTEM
@@ -487,6 +490,9 @@ namespace SimpleCommands
             }
 
             _InputDisplay.OverrideInputString(commandString);
+
+            if (_AutoFocusPostCommand)
+                _InputDisplay.Focus();
         }
 
 #if ENABLE_INPUT_SYSTEM
