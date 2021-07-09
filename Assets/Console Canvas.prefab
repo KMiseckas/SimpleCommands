@@ -119,7 +119,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3306111307824321426}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9999997
+  m_Size: 0.9999996
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1383,11 +1383,11 @@ MonoBehaviour:
   m_Content: {fileID: 8364841666213809466}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.03
-  m_Inertia: 1
+  m_Inertia: 0
   m_DecelerationRate: 2
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 7
   m_Viewport: {fileID: 8264310395239713365}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 6292677958098437817}
@@ -1808,11 +1808,11 @@ MonoBehaviour:
   m_Content: {fileID: 8671601722182002262}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.03
-  m_Inertia: 1
+  m_Inertia: 0
   m_DecelerationRate: 2
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 7
   m_Viewport: {fileID: 8671601721005874457}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 8671601721417488174}
@@ -2179,8 +2179,8 @@ MonoBehaviour:
   _TextField: {fileID: 8671601721999577305}
   _TimePrefix: 1
   _DatePrefix: 0
-  _LineNumber: 1
-  _InputOutputArrows: 1
+  _LineNumberPrefix: 0
+  _InOutPrefix: 0
   _ConsoleColours: {fileID: 11400000, guid: 4154b077f08c8264983a4a858c610a37, type: 2}
 --- !u!1 &8671601721999577303
 GameObject:

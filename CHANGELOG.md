@@ -1,3 +1,6 @@
+#### Additions
+#78: Improved the sensitivity and scrolling bounds of the output and suggestions display panels.
+
 #### Fixes
 #70: Fixed import and method errors due to legacy input.
 #75: Replaced incorrect input key checking for `Tilde` with `BackQuote` to show the console when using legacy input.
