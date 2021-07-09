@@ -210,26 +210,58 @@ namespace SimpleCommands
         /// </summary>
         protected virtual void ActionLegacyInput()
         {
-            if (Input.GetKeyUp(KeyCode.BackQuote))
+            if (ToggleInputLegacy())
             {
                 ToggleConsole();
             }
 
             if (_IsVisible)
             {
-                if (Input.GetKeyUp(KeyCode.Return))
+                if (IssueCommandInputLegacy())
                 {
                     IssueCommand();
                 }
-                else if (Input.GetKeyUp(KeyCode.DownArrow))
+                else if (PreviousCommandInputLegacy())
                 {
                     PreviousCommand();
                 }
-                else if (Input.GetKeyUp(KeyCode.UpArrow))
+                else if (NextCommandInputLegacy())
                 {
                     NextCommand();
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns whether the console can be toggled based on input detected.
+        /// </summary>
+        protected virtual bool ToggleInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.BackQuote) && Input.GetKey(KeyCode.LeftControl);
+        }
+
+        /// <summary>
+        /// Returns whether a command can be issued based on input detected.
+        /// </summary>
+        protected virtual bool IssueCommandInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.Return);
+        }
+
+        /// <summary>
+        /// Returns whether the previous command can be shown based on input detected.
+        /// </summary>
+        protected virtual bool PreviousCommandInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.UpArrow);
+        }
+
+        /// <summary>
+        /// Returns whether the next command can be shown based on input detected.
+        /// </summary>
+        protected virtual bool NextCommandInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.DownArrow);
         }
 #endif
 
