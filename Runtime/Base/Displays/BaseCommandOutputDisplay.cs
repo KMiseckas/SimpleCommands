@@ -15,9 +15,9 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="outputMessage">String message.</param>
         public virtual void Output(string outputMessage, OutputType outputType = OutputType.NONE)
         {
-            if (OutputType.ERROR.Equals(outputType)) Debug.LogError(outputMessage);
-            else if (OutputType.WARNING.Equals(outputType)) Debug.LogWarning(outputMessage);
-            else if (OutputType.INFO.Equals(outputType)) Debug.Log(outputMessage);
+            if (OutputType.ERROR.Equals(outputType)) Debug.LogWarning("SC Error: " + outputMessage);
+            else if (OutputType.WARNING.Equals(outputType)) Debug.LogWarning("SC Warning: " + outputMessage);
+            else if (OutputType.INFO.Equals(outputType)) Debug.Log("SC Info: " + outputMessage);
         }
     }
 }
