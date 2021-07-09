@@ -28,7 +28,7 @@ namespace SimpleCommands.Runtime.Base
 
             StripTargetInfo(ref commandInput, out string targetInfoString);
 
-            string[] splitCommand = Regex.Matches(commandInput, @"([`\""])(?<value>.+?)\1|(?<value>[^ ]+)")
+            string[] splitCommand = Regex.Matches(commandInput, @"(['`\""])(?<value>.+?)\1|(?<value>[^ ]+)")
                 .Cast<Match>()
                 .Select(m => m.Groups["value"].Value)
                 .ToArray();
