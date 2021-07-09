@@ -11,6 +11,7 @@
 #76: When not visible, the console no longer processes certain input for legacy and new input system.
 #79: Fixes an issue where the legacy input would run inverted logic to the new input system when pressing `down` or `up` arrow keys.
 #80: Fixed an issue where `BackQuote` input would toggle console even when pressing the single quote key.
+#82: Fixed an issue where trying to issue a command on a run instance ID target would not work.
 
 [0.2.0] - Internal Release
 
