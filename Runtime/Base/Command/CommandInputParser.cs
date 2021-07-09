@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using SimpleCommands.Runtime.Base;
 
-namespace SimpleCommands.Runtime.Implementations
+namespace SimpleCommands.Runtime.Base
 {
     /// <summary>
     /// The default implementation of the <see cref="ICommandInputParser"/>. Parses the executed command input string into its parts and tries to figure out the

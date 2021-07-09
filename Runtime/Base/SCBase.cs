@@ -19,7 +19,7 @@ namespace SimpleCommands
 #if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public abstract class SCBase : MonoBehaviour
+    public class SCBase : MonoBehaviour
     {
         /// <summary>
         /// Name of the input action map used for this system. Hard coded.
@@ -287,7 +287,10 @@ namespace SimpleCommands
         /// Create a new implementation instance of <see cref="ICommandInputParser"/>.
         /// </summary>
         /// <returns>New instance of <see cref="ICommandInputParser"/> implementation.</returns>
-        protected abstract ICommandInputParser CreateCommandInputParser();
+        protected virtual ICommandInputParser CreateCommandInputParser()
+        {
+            return new CommandInputParser();
+        }
 
         /// <summary>
         /// Create a new implementation instance of <see cref="ITextSuggester"/>.

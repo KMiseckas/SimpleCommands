@@ -2,6 +2,7 @@
 #80: By default, the console is now toggled on/off using `BackQuote` + `LeftControl` key input.
 #81: Using `OutputType.Error` will now output the message as a warning rather than an errror in the Unity debug console which previously caused the editor to pause.
 #78: Improved the sensitivity and scrolling bounds of the output and suggestions display panels.
+#86: Moved the `CommandInputParser` over to the `.base` namespace.
 
 #### Fixes
 #70: Fixed import and method errors due to legacy input.
