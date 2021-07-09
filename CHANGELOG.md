@@ -1,5 +1,6 @@
 #### Fixes
 #70: Fixed import and method errors due to legacy input.
+#75: Replaced incorrect input key checking for `Tilde` with `BackQuote` to show the console when using legacy input.
 
 [0.2.0] - Internal Release
 

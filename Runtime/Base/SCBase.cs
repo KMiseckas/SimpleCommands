@@ -205,7 +205,7 @@ namespace SimpleCommands
         /// </summary>
         protected virtual void ActionLegacyInput()
         {
-            if (Input.GetKeyUp(KeyCode.Tilde))
+            if (Input.GetKeyUp(KeyCode.BackQuote))
             {
                 ToggleConsole();
             }
