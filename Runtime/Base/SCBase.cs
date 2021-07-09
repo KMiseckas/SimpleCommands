@@ -104,6 +104,11 @@ namespace SimpleCommands
         protected List<SCCommand> _CurrentCommandSuggestions;
 
         /// <summary>
+        /// Is the console visible and usable.
+        /// </summary>
+        protected bool _IsVisible = false;
+
+        /// <summary>
         /// Reference to the instance of this class.
         /// </summary>
         private static SCBase _Instance;
@@ -209,17 +214,21 @@ namespace SimpleCommands
             {
                 ToggleConsole();
             }
-            else if(Input.GetKeyUp(KeyCode.Return))
+
+            if (_IsVisible)
             {
-                IssueCommand();
-            }
-            else if(Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                PreviousCommand();
-            }
-            else if(Input.GetKeyUp(KeyCode.DownArrow))
-            {
-                NextCommand();
+                if (Input.GetKeyUp(KeyCode.Return))
+                {
+                    IssueCommand();
+                }
+                else if (Input.GetKeyUp(KeyCode.UpArrow))
+                {
+                    PreviousCommand();
+                }
+                else if (Input.GetKeyUp(KeyCode.DownArrow))
+                {
+                    NextCommand();
+                }
             }
         }
 #endif
@@ -328,12 +337,7 @@ namespace SimpleCommands
         /// </summary>
         protected virtual void ToggleConsole()
         {
-            _InputDisplay.SetVisible(!_InputDisplay.IsVisible);
-            _OutputDisplay.SetVisible(!_OutputDisplay.IsVisible);
-            _SuggestionDisplay.SetVisible(!_SuggestionDisplay.IsVisible);
-
-            if (_InputDisplay.IsVisible)
-                _InputDisplay.Focus();
+            SetVisible(!_IsVisible);
         }
 
         /// <summary>
@@ -342,6 +346,8 @@ namespace SimpleCommands
         /// <param name="isVisible">Whether the displays should be visible.</param>
         protected virtual void SetVisible(bool isVisible)
         {
+            _IsVisible = isVisible;
+
             _InputDisplay.SetVisible(isVisible);
             _OutputDisplay.SetVisible(isVisible);
             _SuggestionDisplay.SetVisible(isVisible);
@@ -400,6 +406,8 @@ namespace SimpleCommands
         /// </summary>
         protected void OnIssueCommandInput(InputAction.CallbackContext obj)
         {
+            if (!_IsVisible) return;
+
             IssueCommand();
         }
 #endif
@@ -424,6 +432,8 @@ namespace SimpleCommands
         /// </summary>
         protected void OnPreviousCommandInput(InputAction.CallbackContext obj)
         {
+            if (!_IsVisible) return;
+
             PreviousCommand();
         }
 #endif
@@ -453,6 +463,8 @@ namespace SimpleCommands
         /// </summary>
         protected void OnNextCommandInput(InputAction.CallbackContext obj)
         {
+            if (!_IsVisible) return;
+
             NextCommand();
         }
 #endif
