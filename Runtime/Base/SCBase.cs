@@ -221,11 +221,11 @@ namespace SimpleCommands
                 {
                     IssueCommand();
                 }
-                else if (Input.GetKeyUp(KeyCode.UpArrow))
+                else if (Input.GetKeyUp(KeyCode.DownArrow))
                 {
                     PreviousCommand();
                 }
-                else if (Input.GetKeyUp(KeyCode.DownArrow))
+                else if (Input.GetKeyUp(KeyCode.UpArrow))
                 {
                     NextCommand();
                 }

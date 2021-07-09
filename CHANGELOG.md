@@ -5,6 +5,7 @@
 #70: Fixed import and method errors due to legacy input.
 #75: Replaced incorrect input key checking for `Tilde` with `BackQuote` to show the console when using legacy input.
 #76: When not visible, the console no longer processes certain input for legacy and new input system.
+#79: Fixes an issue where the legacy input would run inverted logic to the new input system when pressing `down` or `up` arrow keys.
 
 [0.2.0] - Internal Release
 
