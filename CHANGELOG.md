@@ -3,6 +3,7 @@
 #81: Using `OutputType.Error` will now output the message as a warning rather than an errror in the Unity debug console which previously caused the editor to pause.
 #78: Improved the sensitivity and scrolling bounds of the output and suggestions display panels.
 #86: Moved the `CommandInputParser` over to the `.base` namespace.
+#87: `OutConsole` method now takes an object rather than a string as an argument.
 
 #### Fixes
 #70: Fixed import and method errors due to legacy input.

@@ -65,10 +65,11 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="failOutput">The string message output received from the execution proccess for the console output.</param>
         /// <param name="targetInfo">The target info to tell on what to execute the commands intent on.</param>
         /// <returns>True if execution succeeded.</returns>
-        internal bool TryExecute(TargetParsersMap targetParserMap, string[] paramVals, out string failOutput, TargetInfo targetInfo = default)
+        internal bool TryExecute(TargetParsersMap targetParserMap, ParamVal[] paramVals, out string failOutput, out object returnObject, TargetInfo targetInfo = default)
         {
             Assert.IsNotNull(paramVals);
 
+            returnObject = null;
             failOutput = "";
 
             object[] parsedParams = null;
@@ -96,12 +97,12 @@ namespace SimpleCommands.Runtime.Base
                 {
                     for (int i = 0; i < targetInstances.Length; i++)
                     {
-                        Method.Invoke(targetInstances[i], parsedParams);
+                        returnObject = Method.Invoke(targetInstances[i], parsedParams);
                     }
                 }
                 else if (Method.IsStatic)
                 {
-                    Method.Invoke(null, parsedParams);
+                    returnObject = Method.Invoke(null, parsedParams);
                 }
                 else
                 {
@@ -159,11 +160,11 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// Try parse the string parameters of the command input string into objects.
         /// </summary>
-        /// <param name="paramVals">The parameter string values.</param>
+        /// <param name="paramVals">The parameter values.</param>
         /// <param name="parsedParams">The array of parameters as parsed from string values.</param>
         /// <param name="failOutput">Output message for the fail, if a fail happens only.</param>
         /// <returns></returns>
-        private bool TryParseParams(string[] paramVals, out object[] parsedParams, out string failOutput)
+        private bool TryParseParams(ParamVal[] paramVals, out object[] parsedParams, out string failOutput)
         {
             failOutput = "";
 
@@ -177,12 +178,12 @@ namespace SimpleCommands.Runtime.Base
                 {
                     try
                     {
-                        parsedParams[i] = ParamInfo[i].ParserFunc.Invoke(paramVals[i]);
+                        parsedParams[i] = ParamInfo[i].ParserFunc.Invoke((string)paramVals[i].Val);
                     }
                     catch
                     {
                         parsedParams = null;
-                        failOutput = $"Could not parse `{paramVals[i]}` as type `{ParamInfo[i].Type.Name}` when executing command.";
+                        failOutput = $"Could not parse `{paramVals[i].Val}` as type `{ParamInfo[i].Type.Name}` when executing command.";
                         return false;
                     }
 
@@ -249,5 +250,15 @@ namespace SimpleCommands.Runtime.Base
         /// Target type ID by which to identify the specific target. Different target types may have different ID formats.
         /// </summary>
         internal string ID;
+    }
+
+    /// <summary>
+    /// Container for paramater info that will go into command method.
+    /// </summary>
+    public struct ParamVal
+    {
+        internal object Val;
+
+        internal bool IsParsed;
     }
 }

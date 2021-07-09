@@ -392,26 +392,19 @@ namespace SimpleCommands
         }
 
         /// <summary>
-        /// Issue a command with the current input field text as command input.
+        /// Issue a command with provided command input.
         /// </summary>
-        public void IssueCommand()
+        public object IssueCommand(string inputString)
         {
+            object result = null;
+
             CommandInputInfo commandInputInfo = null;
 
-            string inputString = _InputDisplay.GetInputString();
-
             if (!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
-                return;
+                return result;
 
             OutConsole(inputString, OutputType.FROM_INPUT);
 
-            _CommandHistory.AddFirst(inputString);
-            _CurrentlyDisplayedCommand = _CommandHistory.First;
-
-            if (_CommandHistory.Count > _CommandHistoryCap)
-            {
-                _CommandHistory.RemoveLast();
-            }
 
             if (!_CommandMapRef.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
@@ -419,7 +412,7 @@ namespace SimpleCommands
             }
             else
             {
-                if (command.TryExecute(CommandTargetParser, commandInputInfo.CommandParams, out string failOutput, commandInputInfo.TargetInfo))
+                if (command.TryExecute(CommandTargetParser, commandInputInfo.CommandParams, out string failOutput, out result, commandInputInfo.TargetInfo))
                 {
                     OutConsole($"Executed command `{commandInputInfo.CommandKey}`.", OutputType.SUCCESS);
                 }
@@ -433,6 +426,24 @@ namespace SimpleCommands
 
             if (_AutoFocusPostCommand)
                 _InputDisplay.Focus();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Issue a command with the current input field text as command input and add to history.
+        /// </summary>
+        public object IssueCommand()
+        {
+            _CommandHistory.AddFirst(_InputDisplay.GetInputString());
+            _CurrentlyDisplayedCommand = _CommandHistory.First;
+
+            if (_CommandHistory.Count > _CommandHistoryCap)
+            {
+                _CommandHistory.RemoveLast();
+            }
+
+            return IssueCommand(_InputDisplay.GetInputString());
         }
 
 #if ENABLE_INPUT_SYSTEM
@@ -558,9 +569,9 @@ namespace SimpleCommands
         /// Output text to the console for rendering.
         /// </summary>
         /// <param name="output">Output to display.</param>
-        public static void OutConsole(string output, OutputType outputType = OutputType.NONE)
+        public static void OutConsole(object output, OutputType outputType = OutputType.NONE)
         {
-            Instance._OutputDisplay.Output(output, outputType);
+            Instance._OutputDisplay.Output(output.ToString(), outputType);
         }
     }
 }

@@ -34,22 +34,50 @@ namespace SimpleCommands.Runtime.Base
                 .ToArray();
 
             string commandKey = splitCommand[0];
-            string[] paramParse = new string[0];
+            ParamVal[] paramParse = new ParamVal[0];
             TargetInfo targetInfo = ParseTargetStringData(targetInfoString);
 
             if (splitCommand.Length > 1)
             {
-                paramParse = new string[splitCommand.Length - 1];
+                paramParse = new ParamVal[splitCommand.Length - 1];
 
                 for (int i = 1; i < splitCommand.Length; i++)
                 {
-                    paramParse[i - 1] = splitCommand[i];
+                    if (IsCommandInvokeArg(splitCommand[i]))
+                    {
+                        string nestedCommandInput = splitCommand[i].TrimStart(CommandInvokePrefix());
+
+                        paramParse[i - 1].Val = SCBase.Instance.IssueCommand(nestedCommandInput);
+                        paramParse[i -1].IsParsed = true;
+                    }
+                    else
+                    {
+                        paramParse[i - 1].Val = splitCommand[i];
+                    }
                 }
             }
 
             commandInputInfo = new CommandInputInfo(commandKey, paramParse, targetInfo);
 
             return true;
+        }
+
+        /// <summary>
+        /// Check if the argument starts with a command invoker denoting symbol.
+        /// </summary>
+        /// <param name="commandArg">The command argument to check.</param>
+        /// <returns>True if this argument has to invoke a command to get the actual argument value.</returns>
+        protected virtual bool IsCommandInvokeArg(string commandArg)
+        {
+            return commandArg.StartsWith(char.ToString(CommandInvokePrefix()));
+        }
+
+        /// <summary>
+        /// The prefix required for a input text to be considered as a command invoke argument.
+        /// </summary>
+        protected virtual char CommandInvokePrefix()
+        {
+            return '@';
         }
 
         /// <summary>
@@ -61,12 +89,12 @@ namespace SimpleCommands.Runtime.Base
         {
             targetInfoString = "";
 
-            Match match = Regex.Match(commandInputString, @"\[([^]]*)\]");
+            Match match = Regex.Match(commandInputString, @"\[([^]])\]");
 
             if (!match.Success)
                 return;
 
-            commandInputString = Regex.Replace(commandInputString, @"\[([^]]*)\]", "");
+            commandInputString = Regex.Replace(commandInputString, @"\[([^]])\]", "");
 
             targetInfoString = match.Groups[1].Value;
         }
