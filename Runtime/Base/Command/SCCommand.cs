@@ -176,15 +176,28 @@ namespace SimpleCommands.Runtime.Base
             {
                 if (paramValCount > i)
                 {
-                    try
+                    if (paramVals[i].Val == null)
                     {
-                        parsedParams[i] = ParamInfo[i].ParserFunc.Invoke((string)paramVals[i].Val);
-                    }
-                    catch
-                    {
-                        parsedParams = null;
-                        failOutput = $"Could not parse `{paramVals[i].Val}` as type `{ParamInfo[i].Type.Name}` when executing command.";
+                        failOutput = $"Could not parse `null` as type `{ParamInfo[i].Type.Name}` when executing command. Did a nested command fail the argument parsing?";
                         return false;
+                    }
+
+                    if (!paramVals[i].IsParsed)
+                    {
+                        try
+                        {
+                            parsedParams[i] = ParamInfo[i].ParserFunc.Invoke((string)paramVals[i].Val);
+                        }
+                        catch
+                        {
+                            parsedParams = null;
+                            failOutput = $"Could not parse `{paramVals[i].Val}` as type `{ParamInfo[i].Type.Name}` when executing command.";
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        parsedParams[i] = paramVals[i].Val;
                     }
 
                     continue;

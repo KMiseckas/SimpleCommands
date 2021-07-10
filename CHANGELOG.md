@@ -1,5 +1,5 @@
 #### Additions
-#85: Commands can now contain arguments that call other commands to retrieve a value for the original command invoke.
+#85: Commands can now contain nested commands that will return a value for the original argument.
 
 #### Changes
 #80: By default, the console is now toggled on/off using `BackQuote` + `LeftControl` key input.

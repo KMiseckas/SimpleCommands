@@ -400,10 +400,10 @@ namespace SimpleCommands
 
             CommandInputInfo commandInputInfo = null;
 
+            OutConsole("> " + inputString, OutputType.FROM_INPUT);
+
             if (!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
                 return result;
-
-            OutConsole(inputString, OutputType.FROM_INPUT);
 
 
             if (!_CommandMapRef.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))

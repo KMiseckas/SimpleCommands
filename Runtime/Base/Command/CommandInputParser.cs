@@ -16,6 +16,19 @@ namespace SimpleCommands.Runtime.Base
     /// </summary>
     public class CommandInputParser : ICommandInputParser
     {
+        private readonly char[] _GenericEnclosureSymbols;
+
+        private readonly char[] _TargetArgumentEnclosureSymbols;
+
+        protected char[] GenericEnclosureSymbols => _GenericEnclosureSymbols;
+        protected char[] TargetArgumentEnclosureSymbols => _TargetArgumentEnclosureSymbols;
+
+        protected internal CommandInputParser()
+        {
+            _GenericEnclosureSymbols = CreateGenericEnclosureSymbols();
+            _TargetArgumentEnclosureSymbols = CreateTargetArgumentDefinitionSymbols();
+        }
+
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -26,7 +39,7 @@ namespace SimpleCommands.Runtime.Base
             if (commandInput == null || commandInput == "")
                 return false;
 
-            StripTargetInfo(ref commandInput, out string targetInfoString);
+            StripFirstTargetInfo(ref commandInput, out string targetInfoString);
 
             string[] splitCommand = Regex.Matches(commandInput, @"(['`\""])(?<value>.+?)\1|(?<value>[^ ]+)")
                 .Cast<Match>()
@@ -85,18 +98,100 @@ namespace SimpleCommands.Runtime.Base
         /// </summary>
         /// <param name="commandInputString">The whole string of the command input.</param>
         /// <param name="targetInfoString">The string which contains the data for the target info.</param>
-        private void StripTargetInfo(ref string commandInputString, out string targetInfoString)
+        private void StripFirstTargetInfo(ref string commandInputString, out string targetInfoString)
         {
             targetInfoString = "";
 
-            Match match = Regex.Match(commandInputString, @"\[([^]])\]");
+            /*Match match = Regex.Match(commandInputString, @"\[([^\]]*)\]");
 
             if (!match.Success)
                 return;
 
-            commandInputString = Regex.Replace(commandInputString, @"\[([^]])\]", "");
+            string pattern = @"\[([^\]]*)\]";
+            Regex regex = new Regex(pattern);
 
-            targetInfoString = match.Groups[1].Value;
+            commandInputString = regex.Replace(commandInputString, "", 1);
+
+            targetInfoString = match.Groups[1].Value;*/
+
+            bool hitGenericEnclosureSymbol = false;
+            char nextSymbolToCheck = ' ';
+            int targetSymbolTocheck = 0;
+
+            int targetStart = -1;
+            int targetEnd = -1;
+
+            for (int i = 0; i < commandInputString.Length; i++)
+            {
+                if (targetSymbolTocheck != 1)
+                {
+                    if (hitGenericEnclosureSymbol ? nextSymbolToCheck.Equals(commandInputString[i]) : IsGenericEnclosureSymbol(commandInputString[i]))
+                    {
+                        hitGenericEnclosureSymbol = !hitGenericEnclosureSymbol;
+                        nextSymbolToCheck = commandInputString[i];
+
+                        continue;
+                    }
+
+                    if (hitGenericEnclosureSymbol)
+                        continue;
+                }
+
+                if (commandInputString[i].Equals(TargetArgumentEnclosureSymbols[targetSymbolTocheck]))
+                {
+                    if (targetSymbolTocheck == 0)
+                    {
+                        targetSymbolTocheck = 1;
+                        targetStart = i;
+                    }
+                    else if (targetSymbolTocheck == 1)
+                    {
+                        targetSymbolTocheck = 0;
+                        targetEnd = i;
+
+                        break;
+                    }
+                }
+            }
+
+            if (targetStart != -1 && targetEnd != -1)
+            {
+                int length = targetEnd - targetStart;
+
+                targetInfoString = commandInputString.Substring(targetStart + 1, length - 1);
+                commandInputString = commandInputString.Remove(targetStart, length + 1);
+            }
+        }
+
+        protected bool IsGenericEnclosureSymbol(char symbol)
+        {
+            for (int i = 0; i < GenericEnclosureSymbols.Length; i++)
+            {
+                if (symbol.Equals(GenericEnclosureSymbols[i]))
+                    return true;
+            }
+
+            return false;
+        }
+
+        //instancetest [t=GameObject] {@command_two 50} 5.9
+
+        /// <summary>
+        /// Get the symbols that denotes the opening and closing of any argument.
+        /// </summary>
+        /// <returns>Symbol as char that starts and ends the argument.</returns>
+        protected virtual char[] CreateGenericEnclosureSymbols()
+        {
+            return new char[] { '\'', '\"', '`' };
+        }
+
+        /// <summary>
+        /// Get the symbols that denotes the start and end of a target as an argument.
+        /// </summary>
+        /// <returns>Symbol as char that starts and ends the argument with a target, where char[0] is the opening symbol.</returns>
+        protected virtual char[] CreateTargetArgumentDefinitionSymbols()
+        {
+            return new char[2] { '[', ']' };
         }
 
         /// <summary>
