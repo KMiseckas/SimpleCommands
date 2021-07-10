@@ -1,7 +1,7 @@
 [1.0.1]
 
 #### Changes
-#91: Improved ReadMe.md with essential information and url links to useful pages.
+#91: Improved ReadMe.md with essential information and url links to useful pages.  
 
 [1.0.0] - Initial Public Release
 
