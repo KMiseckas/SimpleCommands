@@ -48,15 +48,37 @@
             ],
             "bindings": [
                 {
-                    "name": "",
-                    "id": "1e40a9c0-1b2b-43c0-b7a4-e8873cff490c",
+                    "name": "Button With One Modifier",
+                    "id": "a8720c07-80be-47e5-9056-f46f45ef54c2",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "23527cdd-f10d-4401-9480-8d7562a1d759",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Toggle",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "bff19f49-ab85-4681-b986-6eb29a41302d",
                     "path": "<Keyboard>/backquote",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Toggle",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "",

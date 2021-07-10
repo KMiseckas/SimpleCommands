@@ -76,7 +76,7 @@ namespace SimpleCommands.Runtime.Base
             if (!int.TryParse(targetInput, out var intID))
                 return null;
 
-            var gameObjectsByID = Object.FindObjectsOfType<GameObject>();
+            var gameObjectsByID = Object.FindObjectsOfType(commandData.ClassType);
 
             for (var i = 0; i < gameObjectsByID.Length; i++)
                 if (gameObjectsByID[i].GetInstanceID() == intID)

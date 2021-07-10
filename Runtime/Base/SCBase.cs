@@ -19,7 +19,7 @@ namespace SimpleCommands
 #if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public abstract class SCBase : MonoBehaviour
+    public class SCBase : MonoBehaviour
     {
         /// <summary>
         /// Name of the input action map used for this system. Hard coded.
@@ -102,6 +102,11 @@ namespace SimpleCommands
         /// Current suggestions from the CommandSuggester.
         /// </summary>
         protected List<SCCommand> _CurrentCommandSuggestions;
+
+        /// <summary>
+        /// Is the console visible and usable.
+        /// </summary>
+        protected bool _IsVisible = false;
 
         /// <summary>
         /// Reference to the instance of this class.
@@ -205,22 +210,58 @@ namespace SimpleCommands
         /// </summary>
         protected virtual void ActionLegacyInput()
         {
-            if (Input.GetKeyUp(KeyCode.Tilde))
+            if (ToggleInputLegacy())
             {
-                ToggleConsole(default);
+                ToggleConsole();
             }
-            else if(Input.GetKeyUp(KeyCode.Return))
+
+            if (_IsVisible)
             {
-                IssueCommand();
+                if (IssueCommandInputLegacy())
+                {
+                    IssueCommand();
+                }
+                else if (PreviousCommandInputLegacy())
+                {
+                    PreviousCommand();
+                }
+                else if (NextCommandInputLegacy())
+                {
+                    NextCommand();
+                }
             }
-            else if(Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                PreviousCommand(default);
-            }
-            else if(Input.GetKeyUp(KeyCode.DownArrow))
-            {
-                NextCommand(default);
-            }
+        }
+
+        /// <summary>
+        /// Returns whether the console can be toggled based on input detected.
+        /// </summary>
+        protected virtual bool ToggleInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.BackQuote) && Input.GetKey(KeyCode.LeftControl);
+        }
+
+        /// <summary>
+        /// Returns whether a command can be issued based on input detected.
+        /// </summary>
+        protected virtual bool IssueCommandInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.Return);
+        }
+
+        /// <summary>
+        /// Returns whether the previous command can be shown based on input detected.
+        /// </summary>
+        protected virtual bool PreviousCommandInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.UpArrow);
+        }
+
+        /// <summary>
+        /// Returns whether the next command can be shown based on input detected.
+        /// </summary>
+        protected virtual bool NextCommandInputLegacy()
+        {
+            return Input.GetKeyUp(KeyCode.DownArrow);
         }
 #endif
 
@@ -246,7 +287,10 @@ namespace SimpleCommands
         /// Create a new implementation instance of <see cref="ICommandInputParser"/>.
         /// </summary>
         /// <returns>New instance of <see cref="ICommandInputParser"/> implementation.</returns>
-        protected abstract ICommandInputParser CreateCommandInputParser();
+        protected virtual ICommandInputParser CreateCommandInputParser()
+        {
+            return new CommandInputParser();
+        }
 
         /// <summary>
         /// Create a new implementation instance of <see cref="ITextSuggester"/>.
@@ -319,21 +363,16 @@ namespace SimpleCommands
         /// </summary>
         protected virtual void OnToggleConsoleInput(InputAction.CallbackContext obj)
         {
-            OnToggleConsole();
+            ToggleConsole();
         }
 #endif
 
         /// <summary>
         /// Toggle the console on/off.
         /// </summary>
-        protected virtual void OnToggleConsole()
+        protected virtual void ToggleConsole()
         {
-            _InputDisplay.SetVisible(!_InputDisplay.IsVisible);
-            _OutputDisplay.SetVisible(!_OutputDisplay.IsVisible);
-            _SuggestionDisplay.SetVisible(!_SuggestionDisplay.IsVisible);
-
-            if (_InputDisplay.IsVisible)
-                _InputDisplay.Focus();
+            SetVisible(!_IsVisible);
         }
 
         /// <summary>
@@ -342,6 +381,8 @@ namespace SimpleCommands
         /// <param name="isVisible">Whether the displays should be visible.</param>
         protected virtual void SetVisible(bool isVisible)
         {
+            _IsVisible = isVisible;
+
             _InputDisplay.SetVisible(isVisible);
             _OutputDisplay.SetVisible(isVisible);
             _SuggestionDisplay.SetVisible(isVisible);
@@ -351,26 +392,19 @@ namespace SimpleCommands
         }
 
         /// <summary>
-        /// Issue a command with the current input field text as command input.
+        /// Issue a command with provided command input.
         /// </summary>
-        public void IssueCommand()
+        public object IssueCommand(string inputString)
         {
+            object result = null;
+
             CommandInputInfo commandInputInfo = null;
 
-            string inputString = _InputDisplay.GetInputString();
+            OutConsole("> " + inputString, OutputType.FROM_INPUT);
 
             if (!_CommandInputParser.TryParseCommandInput(inputString, out commandInputInfo))
-                return;
+                return result;
 
-            OutConsole(inputString, OutputType.FROM_INPUT);
-
-            _CommandHistory.AddFirst(inputString);
-            _CurrentlyDisplayedCommand = _CommandHistory.First;
-
-            if (_CommandHistory.Count > _CommandHistoryCap)
-            {
-                _CommandHistory.RemoveLast();
-            }
 
             if (!_CommandMapRef.TryGetCommand(commandInputInfo.CommandKey, out SCCommand command))
             {
@@ -378,7 +412,7 @@ namespace SimpleCommands
             }
             else
             {
-                if (command.TryExecute(CommandTargetParser, commandInputInfo.CommandParams, out string failOutput, commandInputInfo.TargetInfo))
+                if (command.TryExecute(CommandTargetParser, commandInputInfo.CommandParams, out string failOutput, out result, commandInputInfo.TargetInfo))
                 {
                     OutConsole($"Executed command `{commandInputInfo.CommandKey}`.", OutputType.SUCCESS);
                 }
@@ -392,6 +426,24 @@ namespace SimpleCommands
 
             if (_AutoFocusPostCommand)
                 _InputDisplay.Focus();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Issue a command with the current input field text as command input and add to history.
+        /// </summary>
+        public object IssueCommand()
+        {
+            _CommandHistory.AddFirst(_InputDisplay.GetInputString());
+            _CurrentlyDisplayedCommand = _CommandHistory.First;
+
+            if (_CommandHistory.Count > _CommandHistoryCap)
+            {
+                _CommandHistory.RemoveLast();
+            }
+
+            return IssueCommand(_InputDisplay.GetInputString());
         }
 
 #if ENABLE_INPUT_SYSTEM
@@ -400,6 +452,8 @@ namespace SimpleCommands
         /// </summary>
         protected void OnIssueCommandInput(InputAction.CallbackContext obj)
         {
+            if (!_IsVisible) return;
+
             IssueCommand();
         }
 #endif
@@ -416,6 +470,9 @@ namespace SimpleCommands
 
             LinkedListNode<string> temp = _CurrentlyDisplayedCommand;
             _CurrentlyDisplayedCommand = _CurrentlyDisplayedCommand.Next == null ? temp : _CurrentlyDisplayedCommand.Next;
+
+            if (_AutoFocusPostCommand)
+                _InputDisplay.Focus();
         }
 
 #if ENABLE_INPUT_SYSTEM
@@ -424,6 +481,8 @@ namespace SimpleCommands
         /// </summary>
         protected void OnPreviousCommandInput(InputAction.CallbackContext obj)
         {
+            if (!_IsVisible) return;
+
             PreviousCommand();
         }
 #endif
@@ -431,7 +490,7 @@ namespace SimpleCommands
         /// <summary>
         /// Set the input display field to show the next command from the command history list.
         /// </summary>
-        protected void NextCommandInput()
+        protected void NextCommand()
         {
             if (_CurrentlyDisplayedCommand == null)
                 return;
@@ -445,6 +504,9 @@ namespace SimpleCommands
             }
 
             _InputDisplay.OverrideInputString(commandString);
+
+            if (_AutoFocusPostCommand)
+                _InputDisplay.Focus();
         }
 
 #if ENABLE_INPUT_SYSTEM
@@ -453,7 +515,9 @@ namespace SimpleCommands
         /// </summary>
         protected void OnNextCommandInput(InputAction.CallbackContext obj)
         {
-            NextCommandInput();
+            if (!_IsVisible) return;
+
+            NextCommand();
         }
 #endif
 
@@ -505,9 +569,9 @@ namespace SimpleCommands
         /// Output text to the console for rendering.
         /// </summary>
         /// <param name="output">Output to display.</param>
-        public static void OutConsole(string output, OutputType outputType = OutputType.NONE)
+        public static void OutConsole(object output, OutputType outputType = OutputType.NONE)
         {
-            Instance._OutputDisplay.Output(output, outputType);
+            Instance._OutputDisplay.Output(output.ToString(), outputType);
         }
     }
 }

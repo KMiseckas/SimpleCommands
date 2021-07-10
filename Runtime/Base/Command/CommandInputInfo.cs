@@ -18,7 +18,7 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// The parameters of the passed in command string which will be later parsed into their correct Types based on function invoked by the <see cref="SCCommand"/> object.
         /// </summary>
-        private readonly string[] _CommandParams;
+        private readonly ParamVal[] _CommandParams;
 
         /// <summary>
         /// The target to invoke the <see cref="SCCommand"/> on.
@@ -31,7 +31,7 @@ namespace SimpleCommands.Runtime.Base
         /// <param name="commandKey">The unique key (ID) of the command as parsed.</param>
         /// <param name="commandParams">The parameters as parsed from the input.</param>
         /// <param name="targetInfo">The <see cref="TargetInfo"/> as parsed.</param>
-        internal protected CommandInputInfo(string commandKey, string[] commandParams, TargetInfo targetInfo = default)
+        internal protected CommandInputInfo(string commandKey, ParamVal[] commandParams, TargetInfo targetInfo = default)
         {
             Assert.IsNotNull(commandKey);
             Assert.IsNotNull(commandParams);
@@ -49,7 +49,7 @@ namespace SimpleCommands.Runtime.Base
         /// <summary>
         /// Get the parameters of the command input as been parsed.
         /// </summary>
-        internal protected string[] CommandParams => _CommandParams;
+        internal protected ParamVal[] CommandParams => _CommandParams;
 
         /// <summary>
         /// Get the target info for the command.
