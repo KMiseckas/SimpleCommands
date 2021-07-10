@@ -1,22 +1,24 @@
+[1.0.0] - Initial Public Release
+
 #### Additions
-#85: Commands can now contain nested commands that will return a value for the original argument.
+#85: Commands can now contain nested commands that will return a value for the original argument.  
 
 #### Changes
-#80: By default, the console is now toggled on/off using `BackQuote` + `LeftControl` key input.
-#81: Using `OutputType.Error` will now output the message as a warning rather than an errror in the Unity debug console which previously caused the editor to pause.
-#78: Improved the sensitivity and scrolling bounds of the output and suggestions display panels.
-#86: Moved the `CommandInputParser` over to the `.base` namespace.
-#87: `OutConsole` method now takes an object rather than a string as an argument.
-#85: Can now use back quote, single quote or double quote to group arguments as one when inputing command args.
+#80: By default, the console is now toggled on/off using `BackQuote` + `LeftControl` key input.  
+#81: Using `OutputType.Error` will now output the message as a warning rather than an errror in the Unity debug console which previously caused the editor to pause.  
+#78: Improved the sensitivity and scrolling bounds of the output and suggestions display panels.  
+#86: Moved the `CommandInputParser` over to the `.base` namespace.  
+#87: `OutConsole` method now takes an object rather than a string as an argument.  
+#85: Can now use back quote, single quote or double quote to group arguments as one when inputing command args.  
 
 #### Fixes
 #70: Fixed import and method errors due to legacy input.
-#75: Replaced incorrect input key checking for `Tilde` with `BackQuote` to show the console when using legacy input.
-#76: When not visible, the console no longer processes certain input for legacy and new input system.
-#79: Fixes an issue where the legacy input would run inverted logic to the new input system when pressing `down` or `up` arrow keys.
-#80: Fixed an issue where `BackQuote` input would toggle console even when pressing the single quote key.
-#82: Fixed an issue where trying to issue a command on a run instance ID target would not work.
-#83: Fixed an issue where the input caret would not be focused to the end of line when cycling next or previous commands.
+#75: Replaced incorrect input key checking for `Tilde` with `BackQuote` to show the console when using legacy input.  
+#76: When not visible, the console no longer processes certain input for legacy and new input system.  
+#79: Fixes an issue where the legacy input would run inverted logic to the new input system when pressing `down` or `up` arrow keys.  
+#80: Fixed an issue where `BackQuote` input would toggle console even when pressing the single quote key.  
+#82: Fixed an issue where trying to issue a command on a run instance ID target would not work.  
+#83: Fixed an issue where the input caret would not be focused to the end of line when cycling next or previous commands.  
 
 [0.2.0] - Internal Release
 
