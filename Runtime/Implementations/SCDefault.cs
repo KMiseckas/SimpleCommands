@@ -19,12 +19,5 @@ namespace SimpleCommands.Runtime.Implementations
     /// </summary>
     public class SCDefault : SCBase
     {
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        protected override ICommandInputParser CreateCommandInputParser()
-        {
-            return new CommandInputParser();
-        }
     }
 }
