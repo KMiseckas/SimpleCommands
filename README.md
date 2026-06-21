@@ -1,4 +1,4 @@
-**NOTE: Console commands system for Unity game engine from a while time ago now**
+**NOTE: Console commands system for Unity game engine from a while ago now**
 
 # SimpleCommands - Unity
 
